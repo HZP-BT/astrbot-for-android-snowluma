@@ -6,6 +6,7 @@
     <string name="group_terminal_desktop">终端与桌面</string>
     <string name="group_remote">远程连接</string>
     <string name="group_ai">AI 工作台</string>
+    <string name="group_qq_access">QQ 接入</string>
     <string name="group_privilege">特权后端</string>
     <string name="group_background">后台运行</string>
     <string name="group_device_bridge">终端设备访问</string>

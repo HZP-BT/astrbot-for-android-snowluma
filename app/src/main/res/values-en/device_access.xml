@@ -6,6 +6,7 @@
     <string name="group_terminal_desktop">Terminal and desktop</string>
     <string name="group_remote">Remote connections</string>
     <string name="group_ai">AI workspace</string>
+    <string name="group_qq_access">QQ bridge</string>
     <string name="group_privilege">Privileged backend</string>
     <string name="group_background">Background operation</string>
     <string name="group_device_bridge">Terminal device access</string>

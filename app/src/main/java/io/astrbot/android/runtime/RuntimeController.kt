@@ -61,7 +61,7 @@ data class ManagerState(
 }
 
 enum class LogCategory(private val labelResource: Int) {
-    MANAGER(R.string.ui_manager_7ad33), RUNTIME(R.string.ui_runtime), ASTRBOT(R.string.component_astrbot), NAPCAT(R.string.component_napcat_qq), CPOLAR(R.string.cpolar_name), DESKTOP(R.string.desktop_name), HARNESS(R.string.harness_name)
+    MANAGER(R.string.ui_manager_7ad33), RUNTIME(R.string.ui_runtime), ASTRBOT(R.string.component_astrbot), NAPCAT(R.string.component_napcat_qq), CPOLAR(R.string.cpolar_name), DESKTOP(R.string.desktop_name), HARNESS(R.string.harness_name), SNOWLUMA(R.string.snowluma_name)
 ;
     val label: String get() = AppText.get(labelResource)
 }
@@ -110,6 +110,7 @@ object RuntimeStore {
             DesktopStore.state.update { it.copy(configuration = desktop.configuration(), desired = desktop.desired()) }
         }.onFailure { DesktopStore.state.update { it.copy(error = AppText.get(R.string.desktop_operation_failed)) } }
         runCatching { HarnessRepository(context).refresh() }.onFailure { HarnessStore.state.update { it.copy(error = AppText.get(R.string.harness_failed)) } }
+        runCatching { SnowLumaRepository(context).refresh() }.onFailure { SnowLumaStore.state.update { it.copy(error = AppText.get(R.string.snowluma_failed)) } }
         state.update { it.copy(environmentInstalled = installed, componentsReady = ready,
             services = it.services.mapValues { (id, status) -> if (owner == null) status.copy(history = histories.getValue(id)) else status },
             versions = inspection?.components.orEmpty(), versionNotice = inspection?.notice, versionsCheckedAtMillis = inspection?.checkedAtMillis,
@@ -144,6 +145,8 @@ class RuntimeController(private val context: Context, private val scope: Corouti
     private val cpolarRepository = CpolarRepository(context)
     private val harness = HarnessEngine(context,scope)
     private val harnessRepository = HarnessRepository(context)
+    private val snowluma = SnowLumaEngine(context, scope)
+    private val snowLumaRepository = SnowLumaRepository(context)
     private val desktop = DesktopEngine(context, scope)
     private val desktopRepository = DesktopRepository(context)
     private val configuration = RuntimeConfiguration(context)
@@ -322,6 +325,7 @@ class RuntimeController(private val context: Context, private val scope: Corouti
         if (action.startsWith("ssh-")) SshStore.state.update { it.copy(busy = true, error = null) }
         if (action.startsWith("cpolar-")) CpolarStore.state.update { it.copy(busy = true, error = null) }
         if (action.startsWith("harness-")) HarnessStore.state.update { it.copy(busy = true,error = null,downloaded = 0,total = 0, installation = null) }
+        if (action.startsWith("snowluma-")) SnowLumaStore.state.update { it.copy(busy = true, error = null, stage = null, step = 0, downloaded = 0, total = 0) }
         if (action.startsWith("desktop-")) DesktopStore.state.update { it.copy(busy = true, error = null) }
         event(AppText.get(R.string.ui_start_1ae95, action, id?.label.orEmpty()))
         try {
@@ -345,6 +349,7 @@ class RuntimeController(private val context: Context, private val scope: Corouti
                 ssh.stop(paused = sshRepository.desired())
                 cpolar.stop(paused = cpolarRepository.desired())
                 harness.stop()
+                snowluma.stop()
                 desktop.stop(paused = desktopRepository.desired())
             }
             if (action == "desktop-install") {
@@ -409,6 +414,35 @@ class RuntimeController(private val context: Context, private val scope: Corouti
                     harness.stop(); harnessRepository.setLan(lan)
                     if (resume) harness.start()
                 }
+                "snowluma-license-accept" -> {
+                    snowLumaRepository.setLicenseAccepted()
+                    snowLumaRepository.refresh()
+                    updateState { it.copy(notice = AppText.get(R.string.snowluma_license_accepted)) }
+                }
+                "snowluma-install" -> {
+                    snowluma.stop()
+                    snowLumaRepository.setDesired(false)
+                    desktop.stopQq()
+                    desktopRepository.setQqDesired(false)
+                    snowLumaRepository.install { phase -> updateState { it.copy(phase = phase) } }
+                    snowLumaRepository.refresh()
+                }
+                "snowluma-start" -> startSnowLuma()
+                "snowluma-stop" -> {
+                    snowLumaRepository.setDesired(false)
+                    snowluma.stop()
+                    desktop.stopQq()
+                    desktopRepository.setQqDesired(false)
+                    snowLumaRepository.refresh()
+                }
+                "snowluma-uninstall" -> {
+                    snowLumaRepository.setDesired(false)
+                    snowLumaRepository.setPreferred(false)
+                    snowluma.stop()
+                    desktop.stopQq()
+                    desktopRepository.setQqDesired(false)
+                    snowLumaRepository.uninstall()
+                }
                 "cpolar-install" -> {
                     cpolarRepository.install { phase -> updateState { it.copy(phase = phase) } }
                     cpolar.start()
@@ -436,6 +470,7 @@ class RuntimeController(private val context: Context, private val scope: Corouti
                 "desktop-start" -> { desktop.start(); desktopRepository.setDesired(true); desktop.refresh() }
                 "desktop-stop" -> {
                     desktopRepository.setDesired(false); desktopRepository.setQqDesired(false)
+                    snowLumaRepository.setDesired(false); snowluma.stop()
                     desktop.stop(); desktop.refresh()
                 }
                 "desktop-qq-install" -> {
@@ -463,9 +498,9 @@ class RuntimeController(private val context: Context, private val scope: Corouti
                     }
                     desktopRepository.setDesired(true); desktopRepository.setQqDesired(true); desktop.refresh()
                 }
-                "desktop-qq-stop" -> { desktopRepository.setQqDesired(false); desktop.stopQq() }
+                "desktop-qq-stop" -> { desktopRepository.setQqDesired(false); snowluma.stop(); desktop.stopQq() }
                 "reset-webui-password" -> resetWebUiPassword(requireNotNull(id))
-                "desktop-uninstall" -> { desktop.stop(); desktopRepository.uninstall(); desktop.refresh() }
+                "desktop-uninstall" -> { snowLumaRepository.setDesired(false); snowluma.stop(); desktop.stop(); desktopRepository.uninstall(); desktop.refresh() }
                 "terminal-new" -> terminal.start(newSession = true)
                 "terminal-start" -> terminal.start(terminalSessionId ?: TerminalStore.state.value.selectedId)
                 "terminal-restart" -> {
@@ -503,8 +538,14 @@ class RuntimeController(private val context: Context, private val scope: Corouti
                     install()
                     checkLocalized(RuntimeStore.state.value.componentsReady) { AppText.get(R.string.ui_this_apk_contains_only_the_base_runtime_complete_resources) }
                     configuration.prepareDefaults()
-                    val ids = id?.let { listOf(it) } ?: ServiceId.entries
-                    if (ServiceId.NAPCAT in ids) { desktopRepository.setQqDesired(false); desktop.stopQq() }
+                    val preferSnowLuma = id == null && snowLumaRepository.preferred() &&
+                        SnowLumaStore.state.value.installed && SnowLumaStore.state.value.licenseAccepted
+                    val ids = id?.let { listOf(it) } ?: ServiceId.entries.filterNot { preferSnowLuma && it == ServiceId.NAPCAT }
+                    if (ServiceId.NAPCAT in ids) {
+                        desktopRepository.setQqDesired(false); desktop.stopQq()
+                        snowLumaRepository.setPreferred(false); snowLumaRepository.setDesired(false); snowluma.stop()
+                    }
+                    if (preferSnowLuma && action == "restart") snowluma.stop()
                     if (action == "restart") ids.reversed().forEach { supervisors.getValue(it).stop() }
                     for (serviceId in ids) {
                         checkLocalized(preferences.edit().putBoolean("desired_${serviceId.name}", true).commit()) { AppText.get(R.string.ui_unable_to_save_runtime_preferences_check_storage_space) }
@@ -513,10 +554,14 @@ class RuntimeController(private val context: Context, private val scope: Corouti
                         // Keep the operation active until each requested local interface is ready.
                         if (activeConnections[serviceId]?.let { it.enabled && it.endpoint != null } == true) waitForInterface(serviceId)
                     }
+                    if (preferSnowLuma) startSnowLuma()
                 }
-                "stop" -> (id?.let { listOf(it) } ?: ServiceId.entries.reversed()).forEach { serviceId ->
-                    checkLocalized(preferences.edit().putBoolean("desired_${serviceId.name}", false).commit()) { AppText.get(R.string.ui_unable_to_save_stop_preferences_check_storage_space) }
-                    supervisors.getValue(serviceId).stop()
+                "stop" -> {
+                    if (id == null) { snowLumaRepository.setDesired(false); snowluma.stop() }
+                    (id?.let { listOf(it) } ?: ServiceId.entries.reversed()).forEach { serviceId ->
+                        checkLocalized(preferences.edit().putBoolean("desired_${serviceId.name}", false).commit()) { AppText.get(R.string.ui_unable_to_save_stop_preferences_check_storage_space) }
+                        supervisors.getValue(serviceId).stop()
+                    }
                 }
                 "enable-lan", "disable-lan" -> {
                     val serviceId = requireNotNullLocalized(id) { AppText.get(R.string.ui_select_a_webui_to_configure) }
@@ -623,6 +668,7 @@ class RuntimeController(private val context: Context, private val scope: Corouti
             if (action.startsWith("ssh-")) SshStore.state.update { it.copy(error = message) }
             if (action.startsWith("cpolar-")) CpolarStore.state.update { it.copy(error = message) }
             if (action.startsWith("harness-")) HarnessStore.state.update { it.copy(error = message) }
+            if (action.startsWith("snowluma-")) SnowLumaStore.state.update { it.copy(error = message) }
             if (action.startsWith("terminal-")) TerminalStore.state.update { it.copy(error = message) }
             if (action.startsWith("desktop-")) DesktopStore.state.update { it.copy(error = SecretRedactor.redact(message)) }
             updateState { it.copy(error = SecretRedactor.redact(message)) }
@@ -647,6 +693,7 @@ class RuntimeController(private val context: Context, private val scope: Corouti
                     runCatching { harness.start() }.onFailure { HarnessStore.state.update { it.copy(error = AppText.get(R.string.harness_failed)) } }
                 }
                 if (action.startsWith("harness-")) { harnessRepository.refresh(); HarnessStore.state.update { it.copy(busy = false) } }
+                if (action.startsWith("snowluma-")) { snowLumaRepository.refresh(); SnowLumaStore.state.update { it.copy(busy = false) } }
                 if ((resumeSsh || action == "reconcile") && !backups.hasPendingRestore && !updates.hasPendingUpdate && !napcat.hasPendingUpdate && !images.hasPendingUpdate && desktopRepository.desired()) {
                     runCatching {
                         desktop.start()
@@ -654,6 +701,17 @@ class RuntimeController(private val context: Context, private val scope: Corouti
                     }.onFailure { DesktopStore.state.update { state -> state.copy(paused = false, error = AppText.get(R.string.desktop_operation_failed)) } }
                 }
                 if (action.startsWith("desktop-")) { desktop.refresh(); DesktopStore.state.update { it.copy(busy = false) } }
+                if ((resumeSsh || action == "reconcile") && !backups.hasPendingRestore && !updates.hasPendingUpdate && !napcat.hasPendingUpdate && !images.hasPendingUpdate &&
+                    snowLumaRepository.desired() && SnowLumaStore.state.value.installed && SnowLumaStore.state.value.licenseAccepted) {
+                    runCatching {
+                        supervisors.getValue(ServiceId.NAPCAT).stop()
+                        checkLocalized(preferences.edit().putBoolean("desired_NAPCAT", false).commit()) { AppText.get(R.string.ui_unable_to_save_runtime_preferences_check_storage_space) }
+                        desktopRepository.setQqDesired(true)
+                        desktop.start()
+                        desktop.startQq()
+                        snowluma.start()
+                    }.onFailure { SnowLumaStore.state.update { state -> state.copy(error = AppText.get(R.string.snowluma_failed)) } }
+                }
                 if (!readOnlyCheck) {
                     if (!backups.hasPendingRestore && !updates.hasPendingUpdate && !napcat.hasPendingUpdate && !images.hasPendingUpdate) retainLogs()
                     RuntimeStore.refreshInstallation(context)
@@ -1046,6 +1104,23 @@ class RuntimeController(private val context: Context, private val scope: Corouti
 
     private fun readNapCatToken() = JSONObject(File(context.filesDir, "persistent/napcat/config/webui.json").readText()).getString("token")
 
+    private suspend fun startSnowLuma() {
+        checkLocalized(SnowLumaStore.state.value.installed) { AppText.get(R.string.snowluma_install_first) }
+        checkLocalized(SnowLumaStore.state.value.licenseAccepted) { AppText.get(R.string.snowluma_license_required) }
+        // One QQ session cannot be driven by both local bridges at once.
+        checkLocalized(preferences.edit().putBoolean("desired_NAPCAT", false).commit()) { AppText.get(R.string.ui_unable_to_save_runtime_preferences_check_storage_space) }
+        supervisors.getValue(ServiceId.NAPCAT).stop()
+        desktopRepository.setDesired(true)
+        desktopRepository.setQqDesired(true)
+        updateState { it.copy(phase = AppText.get(R.string.snowluma_starting)) }
+        desktop.start()
+        desktop.startQq()
+        snowluma.start()
+        snowLumaRepository.setDesired(true)
+        snowLumaRepository.setPreferred(true)
+        snowLumaRepository.refresh()
+    }
+
     private fun launchCommand(id: ServiceId, nonce: String? = null) = when (id) {
         ServiceId.ASTRBOT -> "cd /opt/astrbot; export HOME=/persistent/home ASTRBOT_ROOT=/persistent/astrbot; " +
             "export ASTRBOT_MANAGER_OBSERVATION_NONCE=${requireNotNull(nonce)}; " +
@@ -1077,6 +1152,7 @@ class RuntimeController(private val context: Context, private val scope: Corouti
         terminal.close()
         cpolar.close()
         harness.close()
+        snowluma.close()
         desktop.close()
         ssh.stop()
         supervisors.values.toList().reversed().forEach { it.close() }

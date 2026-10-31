@@ -50,6 +50,7 @@ class RuntimeService : Service() {
                 .combine(TerminalStore.state) { current, _ -> current }
                 .combine(DesktopStore.state) { current, _ -> current }
                 .combine(HarnessStore.state) { current, _ -> current }
+                .combine(SnowLumaStore.state) { current, _ -> current }
                 .combine(AppText.languageChanged) { current, _ -> current }
                 .collectLatest { (state, network, ssh) ->
                 val detail = if (state.busy) state.phase else state.services.values.joinToString(" · ") { "${it.id.label} ${it.localizedSummary()}" }
@@ -57,6 +58,7 @@ class RuntimeService : Service() {
                     (if (ssh.running) AppText.get(R.string.ui_ssh_running) else "") +
                     (if (CpolarStore.state.value.running) " · cpolar" else "") +
                     (if (HarnessStore.state.value.active) " · DeepSeek Harness" else "") +
+                    (if (SnowLumaStore.state.value.active) " · SnowLuma" else "") +
                     (if (TerminalStore.state.value.running) " · ${AppText.get(R.string.terminal_running_count, TerminalStore.state.value.runningCount)}" else "") +
                     (if (DesktopStore.state.value.running) " · ${AppText.get(R.string.desktop_name)}" else "") +
                     (state.storageSpace.warning?.let { " · ${state.storageSpace.pressure.title}" } ?: "")))
@@ -111,7 +113,7 @@ class RuntimeService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     private fun idle() = RuntimeStore.state.value.services.values.none { it.desiredRunning } &&
-        !SshStore.state.value.running && !CpolarStore.state.value.running && !TerminalStore.state.value.running && !DesktopStore.state.value.running && !HarnessStore.state.value.active
+        !SshStore.state.value.running && !CpolarStore.state.value.running && !TerminalStore.state.value.running && !DesktopStore.state.value.running && !HarnessStore.state.value.active && !SnowLumaStore.state.value.active
 
     override fun onDestroy() {
         lifecycleEvent("destroyed")

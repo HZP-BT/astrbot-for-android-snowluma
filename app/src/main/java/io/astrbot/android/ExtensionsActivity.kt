@@ -93,10 +93,14 @@ class ExtensionsActivity : LocalizedActivity() {
                             startActivity(Intent(this@ExtensionsActivity,HarnessActivity::class.java))
                         },
                         ManagerMenuItem(AppText.get(R.string.cpolar_name), R.drawable.ic_link, AppText.get(R.string.cpolar_extension_subtitle),
-                            badge = { Text(cpolarStatus(cpolar), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }) { cpolarDetail = true }
+                            badge = { Text(cpolarStatus(cpolar), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }) { cpolarDetail = true },
+                        ManagerMenuItem(AppText.get(R.string.snowluma_name), R.drawable.ic_link, AppText.get(R.string.snowluma_subtitle)) {
+                            startActivity(Intent(this@ExtensionsActivity, SnowLumaActivity::class.java))
+                        }
                     )
                     GroupedManagerMenu(listOf(
                         AppText.get(R.string.group_terminal_desktop) to listOf(extensionItems[0], extensionItems[1]),
+                        AppText.get(R.string.group_qq_access) to listOf(extensionItems[5]),
                         AppText.get(R.string.group_remote) to listOf(extensionItems[2], extensionItems[4]),
                         AppText.get(R.string.group_ai) to listOf(extensionItems[3])
                     ), Modifier.weight(1f))

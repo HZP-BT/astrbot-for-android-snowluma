@@ -21,9 +21,12 @@ class WebsiteBrowserActivity : LocalizedActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val harness = intent.getBooleanExtra("harness",false)
+        val snowluma = intent.getBooleanExtra("snowluma",false)
         val bookmark = (if (harness) io.astrbot.android.runtime.HarnessStore.entryUrl?.let { WebsiteBookmark("extension-harness","DeepSeek Harness",it) }
+            else if (snowluma) WebsiteBookmark("extension-snowluma","SnowLuma",io.astrbot.android.runtime.SnowLumaRepository(this).webUiUrl)
             else WebsiteBookmarks(this).read().firstOrNull { it.id == intent.getStringExtra("bookmarkId") })
             ?: run { finish(); return }
+        val extensionPage = harness || snowluma
         scale = BrowserScale(this, "website-${bookmark.id}")
         val layout = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; fitsSystemWindows = true }
         val toolbar = LinearLayout(this).apply { gravity = android.view.Gravity.CENTER_VERTICAL }
@@ -38,7 +41,7 @@ class WebsiteBrowserActivity : LocalizedActivity() {
         }
         button(AppText.get(R.string.ui_back),R.drawable.ic_back) { onBackPressedDispatcher.onBackPressed() }
         address = TextView(this).apply {
-            text = if (harness) bookmark.url.substringBefore('?').substringBefore('#') else bookmark.url; textSize = 12f; maxLines = 2
+            text = if (extensionPage) bookmark.url.substringBefore('?').substringBefore('#') else bookmark.url; textSize = 12f; maxLines = 2
             ellipsize = android.text.TextUtils.TruncateAt.END
         }
         toolbar.addView(address,LinearLayout.LayoutParams(0,-2,1f))
@@ -62,7 +65,7 @@ class WebsiteBrowserActivity : LocalizedActivity() {
                 }
                 override fun onPageStarted(view: WebView,url: String?,favicon: Bitmap?) {
                     error.visibility = View.GONE
-                    if (url != null) address.text = if (harness) url.substringBefore('?').substringBefore('#') else url
+                    if (url != null) address.text = if (extensionPage) url.substringBefore('?').substringBefore('#') else url
                 }
                 override fun onPageFinished(view: WebView,url: String?) { this@WebsiteBrowserActivity.scale.apply(view) }
                 override fun onPageCommitVisible(view: WebView,url: String?) { this@WebsiteBrowserActivity.scale.apply(view) }

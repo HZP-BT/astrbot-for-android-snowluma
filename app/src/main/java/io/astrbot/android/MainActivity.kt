@@ -76,6 +76,7 @@ class MainActivity : LocalizedActivity() {
                 ServiceId.entries.any { preferences.getBoolean("desired_${it.name}", false) } ||
                     preferences.getBoolean("desired_cpolar", false) ||
                     preferences.getBoolean("desired_harness", false) ||
+                    preferences.getBoolean("desired_snowluma", false) ||
                     preferences.getBoolean("desired_desktop", false) ||
                     preferences.getBoolean(SshRepository.DESIRED, false) && preferences.getBoolean(SshRepository.INSTALLED, true)
             }

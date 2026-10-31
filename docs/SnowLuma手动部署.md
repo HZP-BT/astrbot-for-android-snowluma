@@ -22,7 +22,7 @@ App 默认使用 NapCat 接入 QQ。希望了解其他 OneBot 接入方案的用
 
 这里保留原文的 **NapCat Gui** 范围。SnowLuma 是独立的 QQ 互操作项目，提供 OneBot v11 动作与事件；本文介绍怎样让它连接 AstrBot，不表示两者的所有接口、插件和使用场景都能直接互换。
 
-本文参考官方资料，结合本项目已有的手机手动部署记录整理。App 提供通用 Ubuntu、桌面、原版 QQ 和终端；SnowLuma 由用户另外从官方获取。本教程不附带 SnowLuma 程序、原生库、修改版或自动部署脚本，也不代表上游对本 App 或本文的背书。
+本文参考官方资料，结合本项目已有的手机手动部署记录整理。App 提供通用 Ubuntu、桌面、原版 QQ 和终端；SnowLuma 由用户另外从官方获取。本教程不附带 SnowLuma 程序、原生库或修改版，也不代表上游对本 App 或本文的背书。若使用本构建新增的 [SnowLuma 扩展](SnowLuma扩展.md)，安装入口会从官方 Release 获取原包并自动完成第 2 节的下载、校验与注入配置，QQ 登录和 OneBot 连接仍需按第 3、4 节完成。
 
 **先阅读许可再继续。** SnowLuma 采用[源码可见非商业许可](https://github.com/SnowLuma/SnowLuma/blob/v2.2.1/LICENSE)，不是 OSI 定义的开源许可，原生组件另受 [EULA](https://github.com/SnowLuma/SnowLuma/blob/v2.2.1/EULA.md) 约束。其 EULA 第 5.4 条要求第三方打包、自动化脚本部署及商业使用等事先取得书面授权。本文按个人非商业、手动使用官方原包的情形编写；手动操作和保留原包不构成额外许可，具体兼容启动方式有疑义时请向著作权人确认。更多来源见[文末](#来源与许可)。
 
