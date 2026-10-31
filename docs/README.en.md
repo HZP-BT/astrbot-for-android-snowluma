@@ -3,6 +3,7 @@
   <h1>AstrBot for Android</h1>
   <p><a href="../README.md">简体中文</a> | <strong>English</strong></p>
   <p><strong>Run AstrBot and NapCat on your Android device.</strong></p>
+  <p><strong>This branch adds SnowLuma as an alternative to NapCat.</strong></p>
   <p>One APK · Local execution · Native management · Built-in WebUIs</p>
   <p>
     <img src="https://img.shields.io/badge/Kotlin-2.1.20-7F52FF?style=for-the-badge&amp;logo=kotlin&amp;logoColor=white" alt="Kotlin" />
@@ -14,10 +15,12 @@
     <img src="https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=flat-square&amp;logo=android&amp;logoColor=white" alt="Android 8.0 and above" />
     <img src="https://img.shields.io/badge/Architecture-ARM64-64748B?style=flat-square" alt="ARM64" />
     <a href="../LICENSE"><img src="https://img.shields.io/badge/License-MIT-18A978?style=flat-square" alt="MIT License" /></a>
+    <img src="https://img.shields.io/badge/Fork-SnowLuma-0A7E8C?style=flat-square" alt="SnowLuma fork" />
     <a href="https://github.com/JunWan666"><img src="https://img.shields.io/badge/Author-JunWan666-111827?style=flat-square&amp;logo=github" alt="JunWan666" /></a>
   </p>
   <p>
-    <a href="https://github.com/JunWan666/astrbot-for-android/releases/latest">Download APK</a> ·
+    <a href="https://github.com/JunWan666/astrbot-for-android/releases/latest">Upstream APK</a> ·
+    <a href="#changes-in-this-branch">Changes in this branch</a> ·
     <a href="#screenshots">Screenshots</a> ·
     <a href="#architecture">Architecture</a> ·
     <a href="#getting-started">Getting started</a> ·
@@ -27,6 +30,18 @@
     <a href="./CHANGELOG.md">Changelog (Chinese)</a>
   </p>
 </div>
+
+> **This is a personal branch of [JunWan666/astrbot-for-android](https://github.com/JunWan666/astrbot-for-android).** It adds **SnowLuma** as an alternative QQ bridge alongside AstrBot + NapCat: install and start it under Settings → Runtime extensions → QQ bridge. SnowLuma and NapCat are mutually exclusive, and AstrBot keeps its existing reverse connection on port 6199. This repository contains source only — no APK, runtime image or account data.
+
+## Changes in this branch
+
+- **SnowLuma extension**: official release download with SHA-256 verification, extraction, guest-compat startup injection, start/stop and WebUI/log entries; starting it brings up the Ubuntu desktop and original QQ.
+- **Mutually exclusive with NapCat**: starting one stops the other; once SnowLuma has been started, "Start all" prefers it.
+- **Standalone script**: `tools/snowluma-standalone.sh` for installing and running it in an existing Ubuntu terminal without rebuilding the APK.
+- **Docs**: new SnowLuma extension guide (Chinese), updated README, user guide and changelog.
+- **License note**: SnowLuma uses a source-available non-commercial license and its native components are bound by EULA section 5.4; obtain authorization before public distribution.
+
+A complete APK needs runtime assets and signing inputs outside this repository; see the extension guide (Chinese). Official APKs remain available from the upstream releases.
 
 ## Overview
 

@@ -3,6 +3,7 @@
   <h1>AstrBot for Android</h1>
   <p><strong>简体中文</strong> | <a href="./docs/README.en.md">English</a></p>
   <p><strong>把 AstrBot 和 NapCat，装进你的 Android 手机。</strong></p>
+  <p><strong>本分支新增 SnowLuma 接入，可在 NapCat 之外选择 SnowLuma。</strong></p>
   <p>一个 APK · 本地运行 · 原生管理 · 内置 WebUI</p>
   <p>
     <img src="https://img.shields.io/badge/Kotlin-2.1.20-7F52FF?style=for-the-badge&amp;logo=kotlin&amp;logoColor=white" alt="Kotlin" />
@@ -14,10 +15,12 @@
     <img src="https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=flat-square&amp;logo=android&amp;logoColor=white" alt="Android 8.0 and above" />
     <img src="https://img.shields.io/badge/Architecture-ARM64-64748B?style=flat-square" alt="ARM64" />
     <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-18A978?style=flat-square" alt="MIT License" /></a>
+    <img src="https://img.shields.io/badge/Fork-SnowLuma-0A7E8C?style=flat-square" alt="SnowLuma fork" />
     <a href="https://github.com/JunWan666"><img src="https://img.shields.io/badge/Author-JunWan666-111827?style=flat-square&amp;logo=github" alt="JunWan666" /></a>
   </p>
   <p>
-    <a href="https://github.com/JunWan666/astrbot-for-android/releases/latest">下载 APK</a> ·
+    <a href="https://github.com/JunWan666/astrbot-for-android/releases/latest">上游 APK</a> ·
+    <a href="#本分支改动">本分支改动</a> ·
     <a href="#界面预览">界面预览</a> ·
     <a href="#项目架构">项目架构</a> ·
     <a href="#开始使用">开始使用</a> ·
@@ -27,6 +30,18 @@
     <a href="./docs/CHANGELOG.md">更新记录</a>
   </p>
 </div>
+
+> **这是 [JunWan666/astrbot-for-android](https://github.com/JunWan666/astrbot-for-android) 的个人分支。** 在原有 AstrBot + NapCat 的基础上新增 **SnowLuma** 接入：可在「设置 → 扩展组件 → QQ 接入」中安装、启动 SnowLuma 并替代 NapCat；两者互斥，AstrBot 沿用原有 `6199` 反向连接。本仓库只包含源码，不含 APK、运行镜像或账号数据。
+
+## 本分支改动
+
+- **SnowLuma 扩展**：官方 Release 下载 + SHA-256 校验、解压、`guest-compat` 启动注入、启停与 WebUI/日志入口；启动时联动 Ubuntu 桌面与原版 QQ。
+- **与 NapCat 互斥**：启动一方会停止另一方；成功启动过一次 SnowLuma 后，首页「启动全部」优先启动 SnowLuma。
+- **独立脚本**：`tools/snowluma-standalone.sh`，用于不重新打包 APK 时在现有 Ubuntu 终端安装与运行。
+- **文档**：新增 [SnowLuma 扩展说明](docs/SnowLuma扩展.md)，同步 README、使用指南与更新记录。
+- **许可注意**：SnowLuma 为源码可见非商业许可，原生组件受 EULA 第 5.4 条约束；公开分发前需取得授权。详见扩展说明。
+
+本分支的完整 APK 需要仓库外的运行镜像与签名，构建方法见 [SnowLuma 扩展说明](docs/SnowLuma扩展.md#自行构建完整-apk)；上游官方 APK 仍在[上游 Releases](https://github.com/JunWan666/astrbot-for-android/releases) 发布。
 
 ## 项目简介
 
