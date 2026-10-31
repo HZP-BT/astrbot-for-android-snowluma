@@ -42,6 +42,7 @@
 - **许可注意**：SnowLuma 为源码可见非商业许可，原生组件受 EULA 第 5.4 条约束；公开分发前需取得授权。详见扩展说明。
 
 本分支的完整 APK 需要仓库外的运行镜像与签名，构建方法见 [SnowLuma 扩展说明](docs/SnowLuma扩展.md#自行构建完整-apk)；上游官方 APK 仍在[上游 Releases](https://github.com/JunWan666/astrbot-for-android/releases) 发布。
+对于自行构建安装包有困难的可以加Q：2176317027
 
 ## 项目简介
 
