@@ -2,9 +2,11 @@
 
 本构建在 **设置 → 扩展组件 → QQ 接入** 新增 **SnowLuma** 扩展，把原来需要手动执行的下载、校验、解压、`guest-compat` 启动注入和 Node 进程启动合并为「安装 → 启动 → 打开后台」三步。
 
-> **先看许可。** SnowLuma 采用[源码可见非商业许可](https://github.com/SnowLuma/SnowLuma/blob/v2.3.1/LICENSE)，不是 OSI 开源许可；原生组件（`snowluma-*.so`、`snowluma-*.node`）另受 [EULA](https://github.com/SnowLuma/SnowLuma/blob/v2.3.1/EULA.md) 第 5 条约束。EULA 第 5.4 条要求：将专有组件**并入第三方安装包、通过自动化脚本部署**，或用于商业用途，均须事先取得著作权人的**书面授权**。
+> **先看许可。** SnowLuma 采用[源码可见非商业许可](https://github.com/SnowLuma/SnowLuma/blob/v2.2.1/LICENSE)，不是 OSI 开源许可；原生组件（`snowluma-*.so`、`snowluma-*.node`）另受 [EULA](https://github.com/SnowLuma/SnowLuma/blob/v2.2.1/EULA.md) 第 5 条约束。EULA 第 5.4 条要求：将专有组件**并入第三方安装包、通过自动化脚本部署**，或用于商业用途，均须事先取得著作权人的**书面授权**。
 >
 > 本扩展按「设备持有人个人非商业自用、安装时由用户发起并从官方 Release 下载原包」的方式工作，不随 APK 分发 SnowLuma 程序、原生库或修改版。**公开分发包含本扩展的构建前，请先联系 `motricseven@foxmail.com` 取得授权。** 上游对本 App 或本扩展没有背书。
+
+> **版本锁定：** 扩展固定 SnowLuma **v2.2.1**。v2.3.0 更换了原生 hook，在 Linux QQ 3.2.34-53644 上注入后整个 QQ 进程会退出（[upstream #622](https://github.com/SnowLuma/SnowLuma/issues/622)）；Android/PRoot 环境上游也不做可用性保证（[#591](https://github.com/SnowLuma/SnowLuma/issues/591)）。v2.2.1 是本项目手动教程实测完成手机消息往返的版本，切换方法见[手机访问不了 GitHub 时](#手机访问不了-github-时)与下方版本说明。
 
 ## 工作方式
 
@@ -25,7 +27,7 @@ SnowLuma 不替换 `opt/qq` 里的 NapCat：它使用扩展组件中的**原版 
 
 1. 打开 **设置 → 扩展组件 → QQ 接入 → SnowLuma**。
 2. 阅读许可说明，勾选确认后点「确定」，安装入口才会出现。
-3. 点 **安装 SnowLuma**。App 从官方 Release 下载 `SnowLuma-v2.3.1-linux-arm64.tar.gz`（约 50 MiB），先按 `sources.json` 中的 SHA-256 校验，再解压到私有目录并写入 QQ 启动注入配置。
+3. 点 **安装 SnowLuma**。App 从官方 Release 下载 `SnowLuma-v2.2.1-linux-arm64.tar.gz`（约 50 MiB），先按 `sources.json` 中的 SHA-256 校验，再解压到私有目录并写入 QQ 启动注入配置。
 4. 安装完成后点 **启动 SnowLuma**。App 会自动启动 Ubuntu 桌面与原版 QQ；回到桌面页打开桌面，在 QQ 窗口扫码登录。
 5. 点 **打开 SnowLuma 后台**（`http://127.0.0.1:5099`），用扩展日志中的初始密码登录，并按页面要求修改密码。
 6. 在 SnowLuma 后台为已登录账号添加 **WS 客户端（反向连接）**：地址 `ws://127.0.0.1:6199/ws`，角色 `Universal`，消息格式 `array`，Token 与 AstrBot 的 OneBot 连接一致（默认留空）。
@@ -35,17 +37,33 @@ SnowLuma 不替换 `opt/qq` 里的 NapCat：它使用扩展组件中的**原版 
 
 安装器先访问官方 Release，连接失败会自动重试三次。如果手机网络始终无法访问 GitHub（日志里出现 `TimeoutError: timed out` 或 `URLError`），可以离线安装：
 
-1. 在电脑上下载官方包 `SnowLuma-v2.3.1-linux-arm64.tar.gz`（约 50 MiB），SHA-256 应为 `ed9d2b765ff674da7e2cb3f105ec114e32d54ca1649fb87114dc7a3ed73719d2`。
+1. 在电脑上下载官方包 `SnowLuma-v2.2.1-linux-arm64.tar.gz`（约 50 MiB），SHA-256 应为 `26727d30109a5a7cc19e95f7c7a7ca9cbf9eb17adce7c122129e96bda88a2945`。
 2. 在手机 App 中打开 **设置 → 权限 → Android 设备访问 → 文件交换**，点「导入」把包放进 `/android-share`。
 3. 打开 Ubuntu 终端执行：
 
 ```bash
-mkdir -p /manager/extensions/snowluma && cp /android-share/SnowLuma-v2.3.1-linux-arm64.tar.gz /manager/extensions/snowluma/package.tar.gz
+mkdir -p /manager/extensions/snowluma && cp /android-share/SnowLuma-v2.2.1-linux-arm64.tar.gz /manager/extensions/snowluma/package.tar.gz
 ```
 
 4. 回 SnowLuma 页面点 **安装 SnowLuma**。安装器发现校验通过的包会跳过下载，继续解压、写注入配置并检查 Node。
 
 安装失败时页面会带上安装器最后几行的错误摘要，完整输出仍在「日志」里。
+
+### 已安装 v2.3.x、启动后 QQ 退出
+
+v2.3.x 的 hook 在 Linux QQ 3.2.34-53644 上会让 QQ 进程直接退出（upstream #622）。用 v2.2.1 覆盖：
+
+1. 把官方包 `SnowLuma-v2.2.1-linux-arm64.tar.gz` 导入 `/android-share`（方法同上）。
+2. 在 App 中先停止 SnowLuma 与原版 QQ。
+3. 打开 Ubuntu 终端执行：
+
+```bash
+bash /android-share/snowluma-switch-2.2.1.sh
+```
+
+4. 重新进入 SnowLuma 页面，确认版本显示 v2.2.1 后点 **启动 SnowLuma**。
+
+脚本源码见 `tools/snowluma-switch-2.2.1.sh`。切换后不要再用页面的「安装」按钮下载 v2.3.x；本分支后续构建已固定 v2.2.1。
 
 ## 与 NapCat 的关系
 
@@ -98,6 +116,20 @@ mkdir -p /manager/extensions/snowluma && cp /android-share/SnowLuma-v2.3.1-linux
 
 ## 常见问题
 
+### 忘记 WebUI 密码，或更新后密码失效
+
+WebUI 认证保存在程序目录的 `config/webui.json`。App 日志会把 `password=` 后面的内容脱敏，初始密码无法从日志找回；旧版安装器或切换脚本替换程序目录时也会把它清掉。停止 SnowLuma 后，在 Ubuntu 终端执行：
+
+```bash
+cd /manager/extensions/snowluma/program && rm -f config/webui.json
+```
+
+```bash
+HOME=/persistent/snowluma/home XDG_CONFIG_HOME=/persistent/snowluma/home/.config XDG_DATA_HOME=/persistent/snowluma/home/.local/share XDG_CACHE_HOME=/persistent/snowluma/home/.cache SNOWLUMA_HOOK_AUTOLOAD=0 SNOWLUMA_WEBUI_HOST=127.0.0.1 SNOWLUMA_WEBUI_PORT=5099 SNOWLUMA_WEBUI_BOOTSTRAP_PASSWORD='Snowluma@2026' /usr/bin/python3 /manager/extensions/desktop/guest-compat ./node ./index.mjs
+```
+
+用 `admin` 和 `Snowluma@2026` 登录 `http://127.0.0.1:5099`，在页面里改成自己的密码后按 Ctrl+C，再从 App 启动。当前版本的安装器与切换脚本会保留 `config`、`data`，正常更新不会再清除密码。
+
 - **提示先安装 Ubuntu 桌面或原版 QQ**：扩展依赖桌面的 `guest-compat` 与原版 QQ，先在「Ubuntu 桌面」扩展中完成安装。
 - **5099 打不开**：查看 SnowLuma 日志与扩展日志；确认原版 QQ 已登录且 SnowLuma 处于运行状态。同一时间只运行一份 SnowLuma。
 - **启动后不久自动停止**：原版 QQ 退出或桌面被停止时，SnowLuma 会随之关闭；先在桌面中重新登录 QQ，再点启动。
@@ -112,9 +144,9 @@ mkdir -p /manager/extensions/snowluma && cp /android-share/SnowLuma-v2.3.1-linux
 
 ## 来源与许可
 
-- [SnowLuma 官方仓库](https://github.com/SnowLuma/SnowLuma)与[v2.3.1 发行页](https://github.com/SnowLuma/SnowLuma/releases/tag/v2.3.1)
+- [SnowLuma 官方仓库](https://github.com/SnowLuma/SnowLuma)与[v2.2.1 发行页](https://github.com/SnowLuma/SnowLuma/releases/tag/v2.2.1)
 - [官方部署指南](https://snowluma.github.io/zh/docs/guide/deploy)与[动作参考](https://snowluma.github.io/zh/docs/api)
-- [v2.3.1 LICENSE](https://github.com/SnowLuma/SnowLuma/blob/v2.3.1/LICENSE)、[v2.3.1 EULA](https://github.com/SnowLuma/SnowLuma/blob/v2.3.1/EULA.md)
+- [v2.2.1 LICENSE](https://github.com/SnowLuma/SnowLuma/blob/v2.2.1/LICENSE)、[v2.2.1 EULA](https://github.com/SnowLuma/SnowLuma/blob/v2.2.1/EULA.md)
 - 原手动流程见 [SnowLuma 手机手动部署](SnowLuma手动部署.md)
 
 本项目的 MIT 许可适用于本项目原创内容，不为 SnowLuma 或 QQ 授予额外权利。分享排错资料时请隐藏账号、二维码、密码、Token 与 API Key。

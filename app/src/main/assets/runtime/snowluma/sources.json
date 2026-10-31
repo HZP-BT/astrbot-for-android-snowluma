@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "version": "2.3.1",
+  "version": "2.2.1",
   "architecture": "arm64",
-  "release": "https://github.com/SnowLuma/SnowLuma/releases/tag/v2.3.1",
+  "release": "https://github.com/SnowLuma/SnowLuma/releases/tag/v2.2.1",
   "asset": {
-    "name": "SnowLuma-v2.3.1-linux-arm64.tar.gz",
-    "url": "https://github.com/SnowLuma/SnowLuma/releases/download/v2.3.1/SnowLuma-v2.3.1-linux-arm64.tar.gz",
-    "bytes": 52212850,
-    "sha256": "ed9d2b765ff674da7e2cb3f105ec114e32d54ca1649fb87114dc7a3ed73719d2"
+    "name": "SnowLuma-v2.2.1-linux-arm64.tar.gz",
+    "url": "https://github.com/SnowLuma/SnowLuma/releases/download/v2.2.1/SnowLuma-v2.2.1-linux-arm64.tar.gz",
+    "bytes": 52107302,
+    "sha256": "26727d30109a5a7cc19e95f7c7a7ca9cbf9eb17adce7c122129e96bda88a2945"
   },
   "hook": {
     "library": "native/snowluma-linux-arm64.so",

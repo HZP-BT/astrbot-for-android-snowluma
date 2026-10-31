@@ -192,6 +192,12 @@ def install():
         progress.emit('extract', force=True)
         extract(ARCHIVE, STAGING, progress)
         verify_program(STAGING, progress)
+        # WebUI credentials and account data live inside the program directory;
+        # keep them across reinstalls and version switches.
+        for name in ('config', 'data', 'logs'):
+            source_dir = PROGRAM / name
+            if source_dir.is_dir():
+                shutil.copytree(source_dir, STAGING / name, dirs_exist_ok=True)
         if PREVIOUS.exists():
             shutil.rmtree(PREVIOUS)
         if PROGRAM.exists():

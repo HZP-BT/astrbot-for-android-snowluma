@@ -151,9 +151,10 @@ cpolar 在“设置 → 扩展组件”中单独下载安装，客户端不打�
 
 ## 可选方案：SnowLuma 内置扩展
 
-本构建在 **设置 → 扩展组件 → QQ 接入** 提供 **SnowLuma** 扩展：安装时由用户发起，从[官方 Release](https://github.com/SnowLuma/SnowLuma/releases/tag/v2.3.1) 下载 Linux ARM64 完整包并校验 SHA-256，解压到应用私有目录并写好原版 QQ 的启动注入配置；启动时自动拉起 Ubuntu 桌面和原版 QQ，再运行 SnowLuma，后台地址为 `http://127.0.0.1:5099`。
+本构建在 **设置 → 扩展组件 → QQ 接入** 提供 **SnowLuma** 扩展：安装时由用户发起，从[官方 Release](https://github.com/SnowLuma/SnowLuma/releases/tag/v2.2.1) 下载 Linux ARM64 完整包并校验 SHA-256，解压到应用私有目录并写好原版 QQ 的启动注入配置；启动时自动拉起 Ubuntu 桌面和原版 QQ，再运行 SnowLuma，后台地址为 `http://127.0.0.1:5099`。
 
 - **与 NapCat 互斥**：启动 SnowLuma 会停止 NapCat，启动 NapCat 会停止 SnowLuma，同一时间只桥接一个 QQ 会话；成功启动过一次后首页「启动全部」优先启动 SnowLuma。
+- **版本锁定**：固定 SnowLuma v2.2.1（本项目教程实测组合）；v2.3.x 更换原生 hook 后，在 Linux QQ 3.2.34-53644 上注入会导致 QQ 进程退出（upstream #622）。
 - **AstrBot 无需改建连接**：SnowLuma 作为反向 WS 客户端连接默认的 `ws://127.0.0.1:6199/ws`，首次只需在 SnowLuma 后台添加 WS 客户端。
 - 使用方式与排错见 [SnowLuma 扩展说明](docs/SnowLuma扩展.md)；不用扩展时仍可按[手动部署教程](docs/SnowLuma手动部署.md)操作。
 
@@ -163,7 +164,7 @@ cpolar 在“设置 → 扩展组件”中单独下载安装，客户端不打�
 
 [SnowLuma](https://github.com/SnowLuma/SnowLuma) 是另一个提供 OneBot v11 接口的 QQ 互操作项目。[NapCat README](https://github.com/NapNeko/NapCatQQ#new-framework-) 推荐其作为 **NapCat Gui 替代品**；希望了解其他接入方式的用户，可以阅读本项目整理的[手机手动部署与 AstrBot 对接教程](docs/SnowLuma手动部署.md)。
 
-教程使用 App 的通用 Ubuntu、桌面、原版 QQ 和终端，由用户另行获取官方完整包、手动部署并连接 AstrBot。App 默认方案仍为 NapCat，使用本教程时保持 NapCat 停止。SnowLuma 采用**源码可见非商业许可**，原生组件另有专有条款；请先阅读官方 [LICENSE](https://github.com/SnowLuma/SnowLuma/blob/v2.3.1/LICENSE) 和 [EULA](https://github.com/SnowLuma/SnowLuma/blob/v2.3.1/EULA.md)。本仓库不附带其程序；内置扩展在安装时从官方 Release 获取原包，不代表上游背书或额外授权。
+教程使用 App 的通用 Ubuntu、桌面、原版 QQ 和终端，由用户另行获取官方完整包、手动部署并连接 AstrBot。App 默认方案仍为 NapCat，使用本教程时保持 NapCat 停止。SnowLuma 采用**源码可见非商业许可**，原生组件另有专有条款；请先阅读官方 [LICENSE](https://github.com/SnowLuma/SnowLuma/blob/v2.2.1/LICENSE) 和 [EULA](https://github.com/SnowLuma/SnowLuma/blob/v2.2.1/EULA.md)。本仓库不附带其程序；内置扩展在安装时从官方 Release 获取原包，不代表上游背书或额外授权。
 
 ## 源码构建
 

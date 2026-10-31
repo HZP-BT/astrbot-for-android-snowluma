@@ -157,6 +157,7 @@ Install cpolar separately in **Settings → Runtime extensions**; its client is 
 This build adds a **SnowLuma** entry under **Settings → Runtime extensions → QQ bridge**. On install, at the user's request, it fetches the official Linux ARM64 release from GitHub, verifies it against a pinned SHA-256, extracts it into the app's private directory and writes the original-QQ startup injection profile. Starting it launches the Ubuntu desktop and original QQ automatically, then runs SnowLuma; its WebUI is at `http://127.0.0.1:5099`.
 
 - **Mutually exclusive with NapCat**: starting SnowLuma stops NapCat and vice versa, so only one QQ session is bridged at a time. Once SnowLuma has been started, the home screen's "Start all" prefers SnowLuma.
+- **Pinned version**: SnowLuma v2.2.1, the combination verified by this project's guide. v2.3.x replaced the native hook and makes Linux QQ 3.2.34-53644 exit after injection (upstream #622).
 - **No AstrBot reconfiguration**: SnowLuma connects as a reverse WebSocket client to the default `ws://127.0.0.1:6199/ws`; add a WebSocket client in SnowLuma once.
 - See the [SnowLuma extension guide (Chinese)](SnowLuma扩展.md); the [manual setup guide](SnowLuma手动部署.md) still applies if you prefer to do it by hand.
 
@@ -164,7 +165,7 @@ This build adds a **SnowLuma** entry under **Settings → Runtime extensions →
 
 [SnowLuma](https://github.com/SnowLuma/SnowLuma) is another QQ interoperability project providing OneBot v11 interfaces. The [NapCat README](https://github.com/NapNeko/NapCatQQ#new-framework-) recommends it as an alternative to **NapCat Gui**. See our [manual phone setup and AstrBot connection guide (Chinese)](SnowLuma手动部署.md) for the manual approach.
 
-The guide uses the app's general Ubuntu, desktop, original QQ and terminal features. Users obtain the official full package and set it up themselves, keeping NapCat stopped while using this approach. The app's default setup remains NapCat. SnowLuma uses a **source-available non-commercial license**, with separate proprietary terms for native components; read its [LICENSE](https://github.com/SnowLuma/SnowLuma/blob/v2.3.1/LICENSE) and [EULA](https://github.com/SnowLuma/SnowLuma/blob/v2.3.1/EULA.md) first. This repository does not supply its programs; the built-in extension fetches the official package from the official release. Neither implies upstream endorsement or additional permission.
+The guide uses the app's general Ubuntu, desktop, original QQ and terminal features. Users obtain the official full package and set it up themselves, keeping NapCat stopped while using this approach. The app's default setup remains NapCat. SnowLuma uses a **source-available non-commercial license**, with separate proprietary terms for native components; read its [LICENSE](https://github.com/SnowLuma/SnowLuma/blob/v2.2.1/LICENSE) and [EULA](https://github.com/SnowLuma/SnowLuma/blob/v2.2.1/EULA.md) first. This repository does not supply its programs; the built-in extension fetches the official package from the official release. Neither implies upstream endorsement or additional permission.
 
 ## Building from source
 
