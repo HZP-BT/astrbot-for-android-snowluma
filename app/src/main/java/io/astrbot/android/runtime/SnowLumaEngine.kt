@@ -44,11 +44,11 @@ class SnowLumaRepository(private val context: Context) {
 
     fun refresh() {
         val marker = runCatching { DurableFiles.read(File(directory, "installed.json")) }.getOrNull()
-        val library = marker?.optString("library").orEmpty()
+        // Program paths are guest paths; check them through the manager's host directory.
         SnowLumaStore.state.update { it.copy(
             installed = marker?.optInt("schemaVersion") == 1 && marker.optString("archiveSHA256") == assetSha256 &&
                 File(program, "node").isFile && File(program, "index.mjs").isFile &&
-                library.isNotBlank() && File(library).isFile,
+                File(program, "native/snowluma-linux-arm64.so").isFile,
             version = marker?.optString("version"), licenseAccepted = licenseAccepted(), desired = desired()) }
     }
 
@@ -68,11 +68,16 @@ class SnowLumaRepository(private val context: Context) {
         prepareAssets()
         SnowLumaStore.state.update { it.copy(stage = "download", step = 1, downloaded = 0, total = 0) }
         progress(AppText.get(R.string.snowluma_downloading))
+        val tail = java.util.concurrent.ConcurrentLinkedDeque<String>()
         val exitCode = coroutineScope {
             val process = runtime.processBuilder("/usr/bin/python3", "-u",
                 "/manager/extensions/snowluma/scripts/install.py", "install").start()
             val reader = launch(Dispatchers.IO) { process.inputStream.bufferedReader().useLines { lines -> lines.forEach { line ->
                 RuntimeStore.log(context, LogCategory.SNOWLUMA).append(line)
+                if (!line.startsWith("ASTRBOT_SNOWLUMA ") && line.isNotBlank()) {
+                    tail.addLast(line.trim())
+                    while (tail.size > 8) tail.pollFirst()
+                }
                 if (line.startsWith("ASTRBOT_SNOWLUMA ")) runCatching {
                     val value = JSONObject(line.removePrefix("ASTRBOT_SNOWLUMA "))
                     val stage = value.optString("stage")
@@ -96,7 +101,11 @@ class SnowLumaRepository(private val context: Context) {
                 }
             }
         }
-        checkLocalized(exitCode == 0) { AppText.get(R.string.snowluma_failed) }
+        checkLocalized(exitCode == 0) {
+            // Keep the installer's last lines visible so network and environment failures are diagnosable.
+            val detail = tail.joinToString(" ").replace(Regex("\\s+"), " ").trim().take(300)
+            AppText.get(R.string.snowluma_failed) + if (detail.isEmpty()) "" else " $detail"
+        }
         refresh()
         checkLocalized(SnowLumaStore.state.value.installed) { AppText.get(R.string.snowluma_failed) }
     }
@@ -141,7 +150,7 @@ class SnowLumaEngine(private val context: Context, private val scope: CoroutineS
             AppText.get(R.string.snowluma_port_busy, port)
         }
         repository.prepareAssets()
-        val owned = runtime.processBuilder("/bin/sh", "/manager/extensions/snowluma/start.sh").start()
+        val owned = runtime.processBuilder("/bin/sh", "/manager/extensions/snowluma/scripts/start.sh").start()
         process = owned
         SnowLumaStore.state.update { it.copy(active = true, ready = false, error = null) }
         output = scope.launch(Dispatchers.IO) { runCatching { owned.inputStream.bufferedReader().useLines { lines ->

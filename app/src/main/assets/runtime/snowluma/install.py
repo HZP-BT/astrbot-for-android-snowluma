@@ -53,7 +53,7 @@ def atomic_json(path, data):
     os.replace(temporary, path)
 
 
-def download(asset, progress):
+def _download_once(asset, progress):
     expected = asset['bytes']
     digest = hashlib.sha256()
     partial = ARCHIVE.with_suffix('.part')
@@ -74,7 +74,7 @@ def download(asset, progress):
     if offset:
         headers['Range'] = f'bytes={offset}-'
     request = urllib.request.Request(asset['url'], headers=headers)
-    with urllib.request.urlopen(request, timeout=30) as response:
+    with urllib.request.urlopen(request, timeout=60) as response:
         if offset and response.status == 206:
             assert response.headers.get('Content-Range', '').startswith(f'bytes {offset}-'), 'Invalid range response'
         else:
@@ -107,6 +107,26 @@ def verify_archive(asset):
     if actual != asset['sha256']:
         ARCHIVE.unlink(missing_ok=True)
         raise ValueError('Archive checksum does not match the pinned release; download again')
+
+
+def archive_matches(asset):
+    if not ARCHIVE.is_file() or ARCHIVE.stat().st_size != asset['bytes']:
+        return False
+    with ARCHIVE.open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest() == asset['sha256']
+
+
+def download(asset, progress):
+    # A dropped mobile connection leaves a partial file; retries resume it.
+    for attempt in range(1, 4):
+        try:
+            _download_once(asset, progress)
+            return
+        except (OSError, urllib.error.URLError) as error:
+            if attempt == 3:
+                raise
+            print(f'Download attempt {attempt} failed: {error}; retrying in 3 seconds', flush=True)
+            time.sleep(3)
 
 
 def extract(archive, destination, progress):
@@ -161,8 +181,12 @@ def install():
         raise ValueError('Install the Ubuntu desktop extension first')
     swapped = False
     try:
-        progress.emit('download', downloaded=0, total=lock['asset']['bytes'], force=True)
-        download(lock['asset'], progress)
+        if archive_matches(lock['asset']):
+            print('Verified package already present; skipping download.', flush=True)
+            progress.emit('download', downloaded=lock['asset']['bytes'], total=lock['asset']['bytes'], force=True)
+        else:
+            progress.emit('download', downloaded=0, total=lock['asset']['bytes'], force=True)
+            download(lock['asset'], progress)
         progress.emit('verify', force=True)
         verify_archive(lock['asset'])
         progress.emit('extract', force=True)

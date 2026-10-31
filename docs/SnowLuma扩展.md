@@ -31,6 +31,22 @@ SnowLuma 不替换 `opt/qq` 里的 NapCat：它使用扩展组件中的**原版 
 6. 在 SnowLuma 后台为已登录账号添加 **WS 客户端（反向连接）**：地址 `ws://127.0.0.1:6199/ws`，角色 `Universal`，消息格式 `array`，Token 与 AstrBot 的 OneBot 连接一致（默认留空）。
 7. 回首页启动 **AstrBot**，用另一个 QQ 账号私聊测试，确认消息往返。
 
+### 手机访问不了 GitHub 时
+
+安装器先访问官方 Release，连接失败会自动重试三次。如果手机网络始终无法访问 GitHub（日志里出现 `TimeoutError: timed out` 或 `URLError`），可以离线安装：
+
+1. 在电脑上下载官方包 `SnowLuma-v2.3.1-linux-arm64.tar.gz`（约 50 MiB），SHA-256 应为 `ed9d2b765ff674da7e2cb3f105ec114e32d54ca1649fb87114dc7a3ed73719d2`。
+2. 在手机 App 中打开 **设置 → 权限 → Android 设备访问 → 文件交换**，点「导入」把包放进 `/android-share`。
+3. 打开 Ubuntu 终端执行：
+
+```bash
+mkdir -p /manager/extensions/snowluma && cp /android-share/SnowLuma-v2.3.1-linux-arm64.tar.gz /manager/extensions/snowluma/package.tar.gz
+```
+
+4. 回 SnowLuma 页面点 **安装 SnowLuma**。安装器发现校验通过的包会跳过下载，继续解压、写注入配置并检查 Node。
+
+安装失败时页面会带上安装器最后几行的错误摘要，完整输出仍在「日志」里。
+
 ## 与 NapCat 的关系
 
 - **互斥**：启动 SnowLuma 会停止 NapCat 并把 NapCat 的启动偏好置为关闭；启动 NapCat 会停止 SnowLuma。同一时间只有一个 QQ 会话被桥接。
