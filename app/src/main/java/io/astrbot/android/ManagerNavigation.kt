@@ -161,6 +161,9 @@ internal data class ManagerMenuItem(val title: String, val icon: Int, val subtit
 }
 
 @Composable internal fun FixedManagerHome(state: ManagerState, network: NetworkSnapshot, resources: ResourceSnapshot,
+    desktop: DesktopState, snowluma: SnowLumaState,
+    onExtensionCommand: (String) -> Unit, onOpenDesktop: () -> Unit, onDesktopDetails: () -> Unit,
+    onOpenSnowLuma: () -> Unit, onSnowLumaDetails: () -> Unit,
     onCommand: (String, ServiceId?) -> Unit, onDetails: (ServiceId) -> Unit, onOpen: (ServiceId) -> Unit, onNotice: (String, String) -> Unit) {
     BoxWithConstraints(Modifier.fillMaxSize().semantics { contentDescription = AppText.get(R.string.ui_home_content) }) {
         val landscape = maxWidth >= 600.dp && maxHeight < 500.dp
@@ -174,22 +177,13 @@ internal data class ManagerMenuItem(val title: String, val icon: Int, val subtit
                 { onCommand("initialize", null) }, Modifier.fillMaxWidth(), enabled = !state.busy)
         }
         @Composable fun services(modifier: Modifier) {
-            BoxWithConstraints(modifier.fillMaxHeight()) {
-            val minimumCard = if (LocalDensity.current.fontScale > 1.2f) 144.dp else 116.dp
-            val paged = maxHeight < minimumCard * 2 + 12.dp
-            var selected by rememberSaveable { mutableStateOf(ServiceId.ASTRBOT) }
-            Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                if (paged) Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    ServiceId.entries.forEach { id ->
-                        ManagerActionButton(id.label, { selected = id }, Modifier.weight(1f),
-                            if (selected == id) ActionTone.PRIMARY else ActionTone.NEUTRAL, description = AppText.get(R.string.ui_view_card, id.label))
-                    }
-                }
-                (if (paged) listOf(selected) else ServiceId.entries).forEach { id ->
+            Column(modifier.fillMaxHeight().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                ServiceId.entries.forEach { id ->
                     DashboardServiceCard(id, state.services.getValue(id), state.versions[id.label], state.componentsReady, state.busy,
-                        { onOpen(id) }, { onCommand(it, id) }, { onDetails(id) }, Modifier.weight(1f))
+                        { onOpen(id) }, { onCommand(it, id) }, { onDetails(id) }, Modifier.fillMaxWidth().height(168.dp))
                 }
-            }
+                DesktopDashboardCard(state, desktop, onExtensionCommand, onOpenDesktop, onDesktopDetails)
+                SnowLumaDashboardCard(state, snowluma, onExtensionCommand, onOpenSnowLuma, onSnowLumaDetails)
             }
         }
         if (landscape) Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -257,6 +251,69 @@ internal data class ManagerMenuItem(val title: String, val icon: Int, val subtit
                 ManagerActionButton(AppText.get(R.string.ui_details), onDetails, Modifier.weight(.8f), ActionTone.NEUTRAL, description = AppText.get(R.string.ui_details_2ee06, id.label))
             }
         }
+        }
+    }
+}
+
+@Composable private fun DesktopDashboardCard(state: ManagerState, desktop: DesktopState,
+    onCommand: (String) -> Unit, onOpen: () -> Unit, onDetails: () -> Unit) {
+    val summary = when {
+        desktop.busy || state.busy -> state.phase
+        !desktop.configuration.installed -> AppText.get(R.string.ui_not_installed)
+        desktop.running && desktop.webUiReady -> AppText.get(R.string.ui_running)
+        desktop.running -> AppText.get(R.string.ui_waiting_for_webui_readiness)
+        else -> AppText.get(R.string.ui_stopped)
+    } + if (desktop.qqRunning) " · ${AppText.get(R.string.desktop_qq_name)}" else ""
+    ExtensionDashboardCard(
+        title = AppText.get(R.string.desktop_name), summary = summary,
+        description = AppText.get(if (!desktop.configuration.installed) R.string.desktop_install_first else R.string.desktop_description),
+        icon = R.drawable.ic_terminal, openLabel = AppText.get(R.string.desktop_open), openEnabled = desktop.webUiReady,
+        onOpen = onOpen, running = desktop.running,
+        toggleEnabled = desktop.configuration.installed && !state.busy && !desktop.busy && !desktop.paused,
+        onToggle = { onCommand(if (desktop.running) "desktop-stop" else "desktop-start") }, onDetails = onDetails)
+}
+
+@Composable private fun SnowLumaDashboardCard(state: ManagerState, snowluma: SnowLumaState,
+    onCommand: (String) -> Unit, onOpen: () -> Unit, onDetails: () -> Unit) {
+    val summary = when {
+        snowluma.busy || state.busy -> state.phase
+        !snowluma.installed -> AppText.get(R.string.ui_not_installed)
+        snowluma.ready -> AppText.get(R.string.ui_running)
+        snowluma.active -> AppText.get(R.string.ui_waiting_for_webui_readiness)
+        else -> AppText.get(R.string.ui_stopped)
+    }
+    ExtensionDashboardCard(
+        title = AppText.get(R.string.snowluma_name), summary = summary, version = snowluma.version,
+        description = AppText.get(if (!snowluma.installed) R.string.snowluma_install_first else R.string.snowluma_intro),
+        icon = R.drawable.ic_link, openLabel = AppText.get(R.string.snowluma_open), openEnabled = snowluma.ready,
+        onOpen = onOpen, running = snowluma.active,
+        toggleEnabled = snowluma.installed && snowluma.licenseAccepted && !state.busy && !snowluma.busy,
+        onToggle = { onCommand(if (snowluma.active) "snowluma-stop" else "snowluma-start") }, onDetails = onDetails)
+}
+
+@Composable private fun ExtensionDashboardCard(title: String, summary: String, version: String? = null,
+    description: String, icon: Int, openLabel: String, openEnabled: Boolean, onOpen: () -> Unit,
+    running: Boolean, toggleEnabled: Boolean, onToggle: () -> Unit, onDetails: () -> Unit) {
+    Surface(Modifier.fillMaxWidth().height(168.dp), shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerLow) {
+        Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.SpaceBetween) {
+            Row(Modifier.fillMaxWidth().clickable(onClick = onDetails).semantics { contentDescription = title },
+                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Icon(painterResource(icon), null, Modifier.size(28.dp), tint = MaterialTheme.colorScheme.primary)
+                Column(Modifier.weight(1f)) {
+                    Text(title + (version?.takeIf { it.isNotBlank() }?.let { "  v$it" } ?: ""),
+                        style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(summary, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+            }
+            Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                ManagerActionButton(openLabel, onOpen, Modifier.weight(1.4f), enabled = openEnabled)
+                ManagerActionButton(AppText.get(if (running) R.string.ui_stop else R.string.ui_start), onToggle, Modifier.weight(.8f),
+                    if (running) ActionTone.STOP else ActionTone.START, toggleEnabled)
+                ManagerActionButton(AppText.get(R.string.ui_details), onDetails, Modifier.weight(.8f), ActionTone.NEUTRAL)
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 # SnowLuma 扩展：在 App 内安装、启动与对接 AstrBot
 
-本构建在 **设置 → 扩展组件 → QQ 接入** 新增 **SnowLuma** 扩展，把原来需要手动执行的下载、校验、解压、`guest-compat` 启动注入和 Node 进程启动合并为「安装 → 启动 → 打开后台」三步。
+本构建在首页「我的服务」新增 **SnowLuma** 服务卡，把原来需要手动执行的下载、校验、解压、`guest-compat` 启动注入和 Node 进程启动合并为「安装 → 启动 → 打开后台」三步。
 
 > **先看许可。** SnowLuma 采用[源码可见非商业许可](https://github.com/SnowLuma/SnowLuma/blob/v2.2.1/LICENSE)，不是 OSI 开源许可；原生组件（`snowluma-*.so`、`snowluma-*.node`）另受 [EULA](https://github.com/SnowLuma/SnowLuma/blob/v2.2.1/EULA.md) 第 5 条约束。EULA 第 5.4 条要求：将专有组件**并入第三方安装包、通过自动化脚本部署**，或用于商业用途，均须事先取得著作权人的**书面授权**。
 >
@@ -25,7 +25,7 @@ SnowLuma 不替换 `opt/qq` 里的 NapCat：它使用扩展组件中的**原版 
 
 ## 安装与对接
 
-1. 打开 **设置 → 扩展组件 → QQ 接入 → SnowLuma**。
+1. 在首页「我的服务」点 SnowLuma 卡片标题进入详情（首次安装与许可确认都在这里）。
 2. 阅读许可说明，勾选确认后点「确定」，安装入口才会出现。
 3. 点 **安装 SnowLuma**。App 从官方 Release 下载 `SnowLuma-v2.2.1-linux-arm64.tar.gz`（约 50 MiB），先按 `sources.json` 中的 SHA-256 校验，再解压到私有目录并写入 QQ 启动注入配置。
 4. 安装完成后点 **启动 SnowLuma**。App 会自动启动 Ubuntu 桌面与原版 QQ；回到桌面页打开桌面，在 QQ 窗口扫码登录。

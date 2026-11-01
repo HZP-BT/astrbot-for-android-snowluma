@@ -84,25 +84,18 @@ class ExtensionsActivity : LocalizedActivity() {
                                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }) {
                             startActivity(Intent(this@ExtensionsActivity, TerminalActivity::class.java))
                         },
-                        ManagerMenuItem(AppText.get(R.string.desktop_name), R.drawable.ic_terminal, AppText.get(R.string.desktop_subtitle)) {
-                            startActivity(Intent(this@ExtensionsActivity, DesktopActivity::class.java))
-                        },
                         ManagerMenuItem(AppText.get(R.string.ui_ssh_terminal), R.drawable.ic_settings, AppText.get(R.string.ui_remote_ubuntu_access_included_with_the_app),
                             badge = { Text(status, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }) { detail = true },
                         ManagerMenuItem(AppText.get(R.string.harness_name), R.drawable.ic_link, AppText.get(R.string.harness_subtitle)) {
                             startActivity(Intent(this@ExtensionsActivity,HarnessActivity::class.java))
                         },
                         ManagerMenuItem(AppText.get(R.string.cpolar_name), R.drawable.ic_link, AppText.get(R.string.cpolar_extension_subtitle),
-                            badge = { Text(cpolarStatus(cpolar), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }) { cpolarDetail = true },
-                        ManagerMenuItem(AppText.get(R.string.snowluma_name), R.drawable.ic_link, AppText.get(R.string.snowluma_subtitle)) {
-                            startActivity(Intent(this@ExtensionsActivity, SnowLumaActivity::class.java))
-                        }
+                            badge = { Text(cpolarStatus(cpolar), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }) { cpolarDetail = true }
                     )
                     GroupedManagerMenu(listOf(
-                        AppText.get(R.string.group_terminal_desktop) to listOf(extensionItems[0], extensionItems[1]),
-                        AppText.get(R.string.group_qq_access) to listOf(extensionItems[5]),
-                        AppText.get(R.string.group_remote) to listOf(extensionItems[2], extensionItems[4]),
-                        AppText.get(R.string.group_ai) to listOf(extensionItems[3])
+                        AppText.get(R.string.group_terminal_desktop) to listOf(extensionItems[0]),
+                        AppText.get(R.string.group_remote) to listOf(extensionItems[1], extensionItems[3]),
+                        AppText.get(R.string.group_ai) to listOf(extensionItems[2])
                     ), Modifier.weight(1f))
                     Text(AppText.get(R.string.ui_manage_runtime_extensions_here_manage_bot_plugins_in_the), Modifier.padding(horizontal = 4.dp),
                         style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)

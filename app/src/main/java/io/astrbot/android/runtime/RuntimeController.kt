@@ -178,7 +178,22 @@ class RuntimeController(private val context: Context, private val scope: Corouti
             }
             if (id == ServiceId.NAPCAT) NapCatCompatibility(context).prepare()
             val connection = configuration.read(id)
-            connection.endpoint?.let { checkPortFree(it) }
+            connection.endpoint?.let { endpoint ->
+                // A process tree killed by the system can leave one orphan holding the port while
+                // the supervisor already saw the launcher exit. Reap only this service's leftovers.
+                val pattern = if (id == ServiceId.ASTRBOT) "[l]aunch_astrbot.py" else "/opt/qq/q[q]"
+                runCatching {
+                    val cleanup = runtime.processBuilder("/bin/sh", "-lc",
+                        "command -v pkill >/dev/null 2>&1 && pkill -f '$pattern' >/dev/null 2>&1 || true").start()
+                    cleanup.waitFor(15, TimeUnit.SECONDS)
+                }
+                val deadline = System.currentTimeMillis() + 20_000
+                while (System.currentTimeMillis() < deadline) {
+                    if (runCatching { checkPortFree(endpoint) }.isSuccess) break
+                    Thread.sleep(250)
+                }
+                checkPortFree(endpoint)
+            }
             if (id == ServiceId.NAPCAT) {
                 if (configuration.prepareLocalOneBotCompatibility() > 0) {
                     val message = AppText.get(R.string.onebot_ipv4_compat_corrected)
@@ -561,6 +576,13 @@ class RuntimeController(private val context: Context, private val scope: Corouti
                     (id?.let { listOf(it) } ?: ServiceId.entries.reversed()).forEach { serviceId ->
                         checkLocalized(preferences.edit().putBoolean("desired_${serviceId.name}", false).commit()) { AppText.get(R.string.ui_unable_to_save_stop_preferences_check_storage_space) }
                         supervisors.getValue(serviceId).stop()
+                        // Reap a leftover process that outlived a system kill so the port is really released.
+                        val pattern = if (serviceId == ServiceId.ASTRBOT) "[l]aunch_astrbot.py" else "/opt/qq/q[q]"
+                        runCatching {
+                            val cleanup = runtime.processBuilder("/bin/sh", "-lc",
+                                "command -v pkill >/dev/null 2>&1 && pkill -f '$pattern' >/dev/null 2>&1 || true").start()
+                            cleanup.waitFor(10, TimeUnit.SECONDS)
+                        }
                     }
                 }
                 "enable-lan", "disable-lan" -> {

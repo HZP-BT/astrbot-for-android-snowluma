@@ -87,6 +87,8 @@ class MainActivity : LocalizedActivity() {
     @OptIn(ExperimentalLayoutApi::class)
     @Composable private fun ManagerScreen() {
         val state by RuntimeStore.state.collectAsStateWithLifecycle()
+        val desktop by DesktopStore.state.collectAsStateWithLifecycle()
+        val snowluma by SnowLumaStore.state.collectAsStateWithLifecycle()
         val networkFlow = remember { NetworkConnectivity.observe(applicationContext) }
         val network by networkFlow.collectAsStateWithLifecycle(NetworkSnapshot())
         val requestedLog = LogCategory.entries.firstOrNull { it.name == intent.getStringExtra("openLogService") }
@@ -305,7 +307,12 @@ class MainActivity : LocalizedActivity() {
                 ManagerPage.HOME -> Box(Modifier.fillMaxSize().padding(insets).consumeWindowInsets(insets)
                     .padding(horizontal = 16.dp).padding(bottom = 12.dp)) {
                     val id = selectedService
-                    if (id == null) FixedManagerHome(state, network, resources,
+                    if (id == null) FixedManagerHome(state, network, resources, desktop, snowluma,
+                        onExtensionCommand = { command(it) },
+                        onOpenDesktop = { startActivity(Intent(this@MainActivity, DesktopWebUiActivity::class.java)) },
+                        onDesktopDetails = { startActivity(Intent(this@MainActivity, DesktopActivity::class.java)) },
+                        onOpenSnowLuma = { startActivity(Intent(this@MainActivity, WebsiteBrowserActivity::class.java).putExtra("snowluma", true)) },
+                        onSnowLumaDetails = { startActivity(Intent(this@MainActivity, SnowLumaActivity::class.java)) },
                         onCommand = { operation, service -> command(operation, service) },
                         onDetails = { selectedService = it; serviceRoute = ServiceRoute.STATUS },
                         onOpen = { startActivity(Intent(this@MainActivity, WebUiActivity::class.java).putExtra("serviceId", it.name)) },

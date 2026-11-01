@@ -146,6 +146,15 @@ class SnowLumaEngine(private val context: Context, private val scope: CoroutineS
         checkLocalized(repository.licenseAccepted()) { AppText.get(R.string.snowluma_license_required) }
         checkLocalized(DesktopStore.state.value.qqRunning) { AppText.get(R.string.snowluma_qq_required) }
         val port = repository.webUiPort
+        // A killed runtime can leave an orphan WebUI holding the port; reap it before binding again.
+        runCatching {
+            val cleanup = runtime.processBuilder("/bin/sh", "-lc",
+                "command -v pkill >/dev/null 2>&1 && pkill -f '[i]ndex.mjs' >/dev/null 2>&1 || true").start()
+            cleanup.waitFor(10, TimeUnit.SECONDS)
+        }
+        withTimeoutOrNull(15_000) {
+            while (!runCatching { ServerSocket(port, 1, InetAddress.getByName("127.0.0.1")).use { true } }.getOrDefault(false)) delay(250)
+        }
         checkLocalized(runCatching { ServerSocket(port, 1, InetAddress.getByName("127.0.0.1")).use { true } }.getOrDefault(false)) {
             AppText.get(R.string.snowluma_port_busy, port)
         }
