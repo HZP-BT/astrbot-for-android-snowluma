@@ -70,4 +70,5 @@
     <string name="snowluma_connection_hint">In the SnowLuma WebUI, add a WebSocket client for the signed-in account: ws://127.0.0.1:6199/ws, role Universal, message format array, with the same token as the AstrBot OneBot connection (empty by default). The AstrBot OneBot connection does not need to be renamed or recreated.</string>
     <string name="snowluma_workspace">Program: /manager/extensions/snowluma/program. Account data: /persistent/snowluma/home. Regular bot backups do not include this extension.</string>
     <string name="snowluma_step">Step %1$d · %2$s elapsed</string>
+    <string name="ui_all_services_running">All services are running</string>
 </resources>

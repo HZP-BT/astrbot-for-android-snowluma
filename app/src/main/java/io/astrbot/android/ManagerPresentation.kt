@@ -198,17 +198,21 @@ internal enum class ManagerPage(private val labelResource: Int, val icon: Int) {
     }
 }
 
-@Composable internal fun ManagerOverview(state: ManagerState, network: NetworkSnapshot, onCommand: (String) -> Unit) {
-    val running = state.services.values.count { it.ready }
+@Composable internal fun ManagerOverview(state: ManagerState, network: NetworkSnapshot, extensionRunning: Int = 0,
+    total: Int = ServiceId.entries.size, onCommand: (String) -> Unit) {
+    val running = state.services.values.count { it.ready } + extensionRunning
     Column(Modifier.fillMaxWidth().background(Brush.linearGradient(listOf(Color(0xFF386BF6), Color(0xFF5686FF))),
         RoundedCornerShape(16.dp)).padding(18.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
                 Text(AppText.get(R.string.ui_service_overview), style = MaterialTheme.typography.titleMedium, color = Color.White)
-                Text(if (running == 2) AppText.get(R.string.ui_both_service_processes_are_running) else if (running == 0) AppText.get(R.string.ui_start_your_bot_services_on_this_phone) else AppText.get(R.string.ui_some_services_are_running),
-                    style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.8f))
+                Text(when {
+                    running == 0 -> AppText.get(R.string.ui_start_your_bot_services_on_this_phone)
+                    running >= total -> AppText.get(R.string.ui_all_services_running)
+                    else -> AppText.get(R.string.ui_some_services_are_running)
+                }, style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.8f))
             }
-            ManagerRunningCount(running)
+            ManagerRunningCount(running, total)
         }
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(network.title, Modifier.semantics { contentDescription = AppText.get(R.string.ui_system_network_status) },
@@ -236,13 +240,13 @@ internal enum class ManagerPage(private val labelResource: Int, val icon: Int) {
     }
 }
 
-@Composable internal fun ManagerRunningCount(running: Int, compact: Boolean = false) {
+@Composable internal fun ManagerRunningCount(running: Int, total: Int = ServiceId.entries.size, compact: Boolean = false) {
     Row(Modifier.padding(start = 12.dp).semantics(mergeDescendants = true) {
         contentDescription = AppText.get(R.string.ui_running_services_2, running)
     }, verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         Text("$running", style = MaterialTheme.typography.headlineSmall.copy(
             fontSize = if (compact) 28.sp else 34.sp, lineHeight = if (compact) 32.sp else 38.sp), color = Color.White)
-        Text("/ 2", Modifier.padding(bottom = 3.dp), style = MaterialTheme.typography.bodySmall,
+        Text("/ $total", Modifier.padding(bottom = 3.dp), style = MaterialTheme.typography.bodySmall,
             color = Color.White.copy(alpha = 0.75f))
     }
 }

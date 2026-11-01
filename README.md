@@ -155,6 +155,7 @@ cpolar 在“设置 → 扩展组件”中单独下载安装，客户端不打�
 本构建在首页「我的服务」提供 **SnowLuma** 服务卡（详情进入扩展页）：安装时由用户发起，从[官方 Release](https://github.com/SnowLuma/SnowLuma/releases/tag/v2.2.1) 下载 Linux ARM64 完整包并校验 SHA-256，解压到应用私有目录并写好原版 QQ 的启动注入配置；启动时自动拉起 Ubuntu 桌面和原版 QQ，再运行 SnowLuma，后台地址为 `http://127.0.0.1:5099`。
 
 - **与 NapCat 互斥**：启动 SnowLuma 会停止 NapCat，启动 NapCat 会停止 SnowLuma，同一时间只桥接一个 QQ 会话；成功启动过一次后首页「启动全部」优先启动 SnowLuma。
+- **首页精简**：首页「我的服务」不再显示 NapCat，只保留 AstrBot、Ubuntu 桌面与 SnowLuma；「启动全部」只启动 AstrBot，安装了 SnowLuma 时同时启动 SnowLuma。NapCat 仍保留在设置的程序更新中。
 - **版本锁定**：固定 SnowLuma v2.2.1（本项目教程实测组合）；v2.3.x 更换原生 hook 后，在 Linux QQ 3.2.34-53644 上注入会导致 QQ 进程退出（upstream #622）。
 - **AstrBot 无需改建连接**：SnowLuma 作为反向 WS 客户端连接默认的 `ws://127.0.0.1:6199/ws`，首次只需在 SnowLuma 后台添加 WS 客户端。
 - 使用方式与排错见 [SnowLuma 扩展说明](docs/SnowLuma扩展.md)；不用扩展时仍可按[手动部署教程](docs/SnowLuma手动部署.md)操作。

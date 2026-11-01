@@ -168,9 +168,11 @@ internal data class ManagerMenuItem(val title: String, val icon: Int, val subtit
     BoxWithConstraints(Modifier.fillMaxSize().semantics { contentDescription = AppText.get(R.string.ui_home_content) }) {
         val landscape = maxWidth >= 600.dp && maxHeight < 500.dp
         val tight = maxHeight < 600.dp || LocalDensity.current.fontScale > 1.25f
+        val extensionRunning = (if (desktop.running && desktop.webUiReady) 1 else 0) + (if (snowluma.ready) 1 else 0)
+        val totalServices = 1 + 2
         @Composable fun overview() {
-            if (tight) CompactOverview(state, network, { onCommand(it, null) }, onNotice)
-            else ManagerOverview(state, network) { onCommand(it, null) }
+            if (tight) CompactOverview(state, network, extensionRunning, totalServices, { onCommand(it, null) }, onNotice)
+            else ManagerOverview(state, network, extensionRunning, totalServices) { onCommand(it, null) }
             ManagerResources(resources, compact = true)
             ManagerStatusStrip(state, onNotice)
             if (!state.componentsReady) ManagerActionButton(AppText.get(R.string.ui_initialize_runtime),
@@ -178,7 +180,7 @@ internal data class ManagerMenuItem(val title: String, val icon: Int, val subtit
         }
         @Composable fun services(modifier: Modifier) {
             Column(modifier.fillMaxHeight().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                ServiceId.entries.forEach { id ->
+                listOf(ServiceId.ASTRBOT).forEach { id ->
                     DashboardServiceCard(id, state.services.getValue(id), state.versions[id.label], state.componentsReady, state.busy,
                         { onOpen(id) }, { onCommand(it, id) }, { onDetails(id) }, Modifier.fillMaxWidth().height(168.dp))
                 }
@@ -200,9 +202,10 @@ internal data class ManagerMenuItem(val title: String, val icon: Int, val subtit
     }
 }
 
-@Composable private fun CompactOverview(state: ManagerState, network: NetworkSnapshot, onCommand: (String) -> Unit,
+@Composable private fun CompactOverview(state: ManagerState, network: NetworkSnapshot, extensionRunning: Int = 0,
+    total: Int = ServiceId.entries.size, onCommand: (String) -> Unit,
     onNotice: (String, String) -> Unit) {
-    val running = state.services.values.count { it.ready }
+    val running = state.services.values.count { it.ready } + extensionRunning
     Column(Modifier.fillMaxWidth().background(Brush.linearGradient(listOf(Color(0xFF386BF6), Color(0xFF5686FF))),
         MaterialTheme.shapes.large).padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -211,7 +214,7 @@ internal data class ManagerMenuItem(val title: String, val icon: Int, val subtit
                 Text(network.title, Modifier.semantics { contentDescription = AppText.get(R.string.ui_system_network_status) }, style = MaterialTheme.typography.labelSmall,
                     color = Color.White.copy(alpha = .85f), maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
-            ManagerRunningCount(running, compact = true)
+            ManagerRunningCount(running, total, compact = true)
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             ManagerOverviewCommand("start", AppText.get(R.string.ui_start_all), R.drawable.ic_play, state, false, Modifier.weight(1f), onCommand)

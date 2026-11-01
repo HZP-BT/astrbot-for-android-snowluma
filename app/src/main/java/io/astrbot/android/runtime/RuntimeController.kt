@@ -386,7 +386,7 @@ class RuntimeController(private val context: Context, private val scope: Corouti
                 "reconcile" -> {
                     RuntimeStore.refreshInstallation(context)
                     if (RuntimeStore.state.value.componentsReady) {
-                        val wanted = ServiceId.entries.filter { preferences.getBoolean("desired_${it.name}", false) }
+                        val wanted = listOf(ServiceId.ASTRBOT).filter { preferences.getBoolean("desired_${it.name}", false) }
                         if (wanted.isNotEmpty()) {
                             configuration.prepareDefaults()
                             for (serviceId in wanted) {
@@ -553,9 +553,9 @@ class RuntimeController(private val context: Context, private val scope: Corouti
                     install()
                     checkLocalized(RuntimeStore.state.value.componentsReady) { AppText.get(R.string.ui_this_apk_contains_only_the_base_runtime_complete_resources) }
                     configuration.prepareDefaults()
-                    val preferSnowLuma = id == null && snowLumaRepository.preferred() &&
-                        SnowLumaStore.state.value.installed && SnowLumaStore.state.value.licenseAccepted
-                    val ids = id?.let { listOf(it) } ?: ServiceId.entries.filterNot { preferSnowLuma && it == ServiceId.NAPCAT }
+                    // NapCat is no longer a home service: start-all runs AstrBot and the SnowLuma bridge.
+                    val preferSnowLuma = id == null && SnowLumaStore.state.value.installed && SnowLumaStore.state.value.licenseAccepted
+                    val ids = id?.let { listOf(it) } ?: listOf(ServiceId.ASTRBOT)
                     if (ServiceId.NAPCAT in ids) {
                         desktopRepository.setQqDesired(false); desktop.stopQq()
                         snowLumaRepository.setPreferred(false); snowLumaRepository.setDesired(false); snowluma.stop()

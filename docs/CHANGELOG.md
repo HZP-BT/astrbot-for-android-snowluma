@@ -11,6 +11,7 @@
 - 扩展新增按需安装的 DeepSeek Harness，独立准备 Node.js 和固定版本依赖，提供启停、日志、内嵌工作台及可选的局域网访问；默认不安装，不预填模型凭据，卸载程序保留工作目录与配置。
 - 新增可选的 SnowLuma（首页「我的服务」卡片，详情进入扩展页）：安装时从官方 Release 获取并校验 Linux ARM64 完整包，解压后自动写入原版 QQ 的 guest-compat 启动注入；启动时联动 Ubuntu 桌面与原版 QQ，提供后台、日志和 WebUI 入口。SnowLuma 与 NapCat 互斥，AstrBot 沿用原有 6199 反向连接；安装前需确认官方 LICENSE 与 EULA。
 - 首页「我的服务」新增 Ubuntu 桌面与 SnowLuma 服务卡：可直接启动/停止、打开桌面或 SnowLuma 后台并进入详情；服务卡与扩展页共用同一状态。
+- 首页「我的服务」不再显示 NapCat，只保留 AstrBot、Ubuntu 桌面与 SnowLuma；「启动全部」只启动 AstrBot，安装并确认 SnowLuma 许可后同时启动 SnowLuma。
 - 服务启动前回收被系统强杀（137）后残留的孤儿进程并等待端口释放，停止时同样清理；修复停止后立即启动时提示「本机端口 6185 已被占用」的问题。
 - 新增默认关闭的 Android 设备访问：Ubuntu 工具可查询设备与本 App 状态，分别授权后可读取界面、截图、点击、滑动及输入。通过私有本地连接提供固定操作，锁屏时暂停读屏及控制；Shizuku 提供设备操作，可选无障碍服务补充界面读取与中文输入。
 - 新增 `/android-share` 文件交换目录及系统文件导入、导出入口，方便 Android 与 Ubuntu 交换文件。

@@ -70,4 +70,5 @@
     <string name="snowluma_connection_hint">在 SnowLuma 后台为已登录账号添加 WS 客户端：地址 ws://127.0.0.1:6199/ws，角色 Universal，消息格式 array，Token 与 AstrBot OneBot 连接保持一致（默认留空）。AstrBot 的 OneBot 连接无需改名或重建。</string>
     <string name="snowluma_workspace">程序位于 /manager/extensions/snowluma/program；账号数据位于 /persistent/snowluma/home。普通机器人备份不包含此扩展的数据。</string>
     <string name="snowluma_step">第 %1$d 步 · 已用 %2$s</string>
+    <string name="ui_all_services_running">全部服务运行中</string>
 </resources>
