@@ -1,223 +1,274 @@
 <div align="center">
   <img src="./docs/images/logo.png" alt="AstrBot for Android" width="120" />
-  <h1>AstrBot for Android</h1>
+  <h1>AstrBot for Android · SnowLuma 版</h1>
   <p><strong>简体中文</strong> | <a href="./docs/README.en.md">English</a></p>
-  <p><strong>把 AstrBot 和 NapCat，装进你的 Android 手机。</strong></p>
-  <p><strong>本分支新增 SnowLuma 接入，可在 NapCat 之外选择 SnowLuma。</strong></p>
-  <p>一个 APK · 本地运行 · 原生管理 · 内置 WebUI</p>
+  <p><strong>把 AstrBot、SnowLuma 和 QQ，装进你的 Android 手机。</strong></p>
+  <p>一个 APK · 本地运行 · 原生管理 · 内置桌面与 WebUI</p>
   <p>
     <img src="https://img.shields.io/badge/Kotlin-2.1.20-7F52FF?style=for-the-badge&amp;logo=kotlin&amp;logoColor=white" alt="Kotlin" />
     <img src="https://img.shields.io/badge/Jetpack_Compose-Native_UI-4285F4?style=for-the-badge&amp;logo=jetpackcompose&amp;logoColor=white" alt="Jetpack Compose" />
     <img src="https://img.shields.io/badge/Ubuntu-PRoot-E95420?style=for-the-badge&amp;logo=ubuntu&amp;logoColor=white" alt="PRoot Ubuntu" />
   </p>
   <p>
-    <a href="https://github.com/JunWan666/astrbot-for-android/releases/latest"><img src="https://img.shields.io/badge/Version-1.3.0-3867FF?style=flat-square" alt="Version 1.3.0" /></a>
+    <a href="https://github.com/HZP-BT/astrbot-for-android-snowluma/releases/latest"><img src="https://img.shields.io/badge/Version-1.3.0s6-3867FF?style=flat-square" alt="Version 1.3.0s6" /></a>
     <img src="https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=flat-square&amp;logo=android&amp;logoColor=white" alt="Android 8.0 and above" />
     <img src="https://img.shields.io/badge/Architecture-ARM64-64748B?style=flat-square" alt="ARM64" />
     <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-18A978?style=flat-square" alt="MIT License" /></a>
-    <img src="https://img.shields.io/badge/Fork-SnowLuma-0A7E8C?style=flat-square" alt="SnowLuma fork" />
-    <a href="https://github.com/JunWan666"><img src="https://img.shields.io/badge/Author-JunWan666-111827?style=flat-square&amp;logo=github" alt="JunWan666" /></a>
+    <img src="https://img.shields.io/badge/SnowLuma-v2.2.1-0A7E8C?style=flat-square" alt="SnowLuma 2.2.1" />
+    <a href="https://github.com/HZP-BT"><img src="https://img.shields.io/badge/维护者-HZP--BT-111827?style=flat-square&amp;logo=github" alt="HZP-BT" /></a>
   </p>
   <p>
-    <a href="https://github.com/JunWan666/astrbot-for-android/releases/latest">上游 APK</a> ·
-    <a href="#本分支改动">本分支改动</a> ·
+    <a href="#功能特性">功能特性</a> ·
     <a href="#界面预览">界面预览</a> ·
     <a href="#项目架构">项目架构</a> ·
     <a href="#开始使用">开始使用</a> ·
-    <a href="#可选方案snowluma-手动部署">SnowLuma 手动部署</a> ·
+    <a href="#snowluma-接入说明">SnowLuma 接入</a> ·
+    <a href="#源码构建">源码构建</a> ·
+    <a href="#常见问题">常见问题</a> ·
     <a href="./docs/使用指南.md">使用指南</a> ·
-    <a href="./docs/构建指南.md">源码构建</a> ·
     <a href="./docs/CHANGELOG.md">更新记录</a>
   </p>
 </div>
 
-> **这是 [JunWan666/astrbot-for-android](https://github.com/JunWan666/astrbot-for-android) 的个人分支。** 在原有 AstrBot + NapCat 的基础上新增 **SnowLuma** 接入：可在首页「我的服务」的 SnowLuma 卡片中安装、启动 SnowLuma 并替代 NapCat；两者互斥，AstrBot 沿用原有 `6199` 反向连接。本仓库只包含源码，不含 APK、运行镜像或账号数据。
-
-## 本分支改动
-
-- **SnowLuma 扩展**：官方 Release 下载 + SHA-256 校验、解压、`guest-compat` 启动注入、启停与 WebUI/日志入口；启动时联动 Ubuntu 桌面与原版 QQ。
-- **与 NapCat 互斥**：启动一方会停止另一方；成功启动过一次 SnowLuma 后，首页「启动全部」优先启动 SnowLuma。
-- **首页服务卡**：Ubuntu 桌面与 SnowLuma 已从扩展页移到首页「我的服务」，可直接启停、打开后台并进入详情。
-- **独立脚本**：`tools/snowluma-standalone.sh`，用于不重新打包 APK 时在现有 Ubuntu 终端安装与运行。
-- **文档**：新增 [SnowLuma 扩展说明](docs/SnowLuma扩展.md)，同步 README、使用指南与更新记录。
-- **许可注意**：SnowLuma 为源码可见非商业许可，原生组件受 EULA 第 5.4 条约束；公开分发前需取得授权。详见扩展说明。
-
-本分支的完整 APK 需要仓库外的运行镜像与签名，构建方法见 [SnowLuma 扩展说明](docs/SnowLuma扩展.md#自行构建完整-apk)；上游官方 APK 仍在[上游 Releases](https://github.com/JunWan666/astrbot-for-android/releases) 发布。
-对于自行构建安装包有困难的可以加Q：2176317027
-
 ## 项目简介
 
-**AstrBot for Android（AstrBot 运行管理器）** 是面向 Android 设备的 AstrBot 与 NapCat 本地部署及运行管理应用。通过单个 APK 集成 PRoot Ubuntu 运行环境与服务组件，提供环境初始化、服务启停、状态监控、日志查看、备份恢复及独立在线更新等功能，无需 Root。
+**AstrBot for Android（SnowLuma 版）** 是一个在 Android 手机本地运行 AstrBot 与 SnowLuma 的一体化管理应用。它把 Ubuntu 运行环境、AstrBot、Linux QQ、Ubuntu 桌面和 SnowLuma 打包进一个 APK，通过原生管理界面完成环境初始化、服务启停、QQ 登录、模型接入和后台管理，**无需 Root**。
 
-应用采用 Kotlin 与 Jetpack Compose 构建原生管理界面，支持简体中文与英文，通过内置 WebView 访问 AstrBot 和 NapCat 的 WebUI，在手机端完成 QQ 登录、模型接入与插件配置，并提供人设管理、局域网访问、SSH 终端与 cpolar 内网穿透扩展。
+应用内置 PRoot Ubuntu 24.04 运行环境，AstrBot 与 SnowLuma 都以本地服务运行：AstrBot 提供模型、平台、插件与人设管理；SnowLuma 把已登录的 Linux QQ 会话转换为 OneBot v11 接口，通过反向 WebSocket 连接 AstrBot。QQ 登录在应用内置的 Ubuntu 桌面中扫码完成，全程不需要在电脑上配置。
 
-当前版本为 **1.3.0**。本轮新增常用网页导航、Shizuku 权限管理、终端设备访问与 DeepSeek Harness 可选扩展，整理设置分类，并改善服务就绪状态、下载进度、终端选字和进程管理。完整变化见[更新记录](docs/CHANGELOG.md)。
+当前发布版本 **1.3.0-snowluma-6**，固定使用 **SnowLuma v2.2.1**（本项目实测可用的版本），并针对 Android/PRoot 环境做了启动注入与进程管理适配。
+
+## 功能特性
+
+### 一体化本地部署
+
+- **单 APK 内置环境**：Ubuntu 24.04.3、AstrBot 4.29.3、Linux QQ 3.2.34、Xvfb/Fluxbox/noVNC 桌面和运行依赖全部随包提供，离线初始化即可使用。
+- **原生管理界面**：Kotlin + Jetpack Compose，首页直接管理 AstrBot、Ubuntu 桌面与 SnowLuma 三张服务卡，提供启停、重启、打开后台和详情入口。
+- **内置后台**：AstrBot 管理后台（默认 `127.0.0.1:6185`）和 SnowLuma 管理后台（默认 `127.0.0.1:5099`）都在应用内打开，无需外部浏览器。
+
+### SnowLuma 接入
+
+- **官方包安装**：从 SnowLuma 官方 Release 获取 Linux ARM64 完整包，按 SHA-256 校验后解压，不修改程序文件。
+- **启动注入**：通过 `guest-compat` 在原版 QQ 启动时加载 SnowLuma 原生 hook，等待 `wrapper.node` 就绪后初始化，QQ 登录仍然走官方客户端。
+- **与 AstrBot 对接**：SnowLuma 以反向 WebSocket 客户端连接 AstrBot 的 OneBot v11 服务，默认使用 6199 端口，也支持自定义端口（两边保持一致即可）。
+- **版本锁定**：固定 **v2.2.1**。v2.3.x 更换原生 hook 后，在 Linux QQ 3.2.34-53644 上注入会导致 QQ 进程退出；本项目以实测可用的 v2.2.1 为默认。
+- **配置保留**：安装、更新或回退版本时会保留 SnowLuma 的 `config` 与 `data`，WebUI 密码和账号配置不会丢失。
+
+### 稳定性与进程管理
+
+- **孤儿进程回收**：服务启动前和停止后都会清理被系统强杀（退出码 137）后残留的进程，并等待端口释放，避免“端口被占用”导致反复启动失败。
+- **进程监督**：每个服务独立监督，异常退出自动记录并提供恢复；前台服务持有唤醒锁，页面关闭不影响运行。
+- **健康检查**：内置探测确认 AstrBot 和 SnowLuma 后台真正就绪后才显示运行状态。
+- **日志与诊断**：按服务分类的滚动日志，自动脱敏密码、Token 和二维码，支持导出诊断包。
+
+### 桌面、终端与扩展
+
+- **Ubuntu 桌面**：Xvfb + Fluxbox + noVNC，内置浏览器即可操作，用于 QQ 扫码登录和运行其他 Linux 图形程序。
+- **终端与 SSH**：内置 Ubuntu 终端与 SSH 服务，可在手机上执行命令、管理文件和远程接入。
+- **可选扩展**：DeepSeek Harness、cpolar 内网穿透按需安装，不增加默认包体积。
+- **设备访问**：可选的 Shizuku 后台子进程管理与 Android 设备访问能力，用于排查系统进程限制和自动化。
+
+### 数据与安全
+
+- **备份恢复**：支持本机快照和导出到应用外的便携备份；升级、回滚和恢复前自动创建快照。
+- **凭据保护**：WebUI 登录信息、API Key、Token 等在日志中自动脱敏。
+- **下载校验**：QQ、SnowLuma 和更新包均校验大小与 SHA-256，校验失败不会覆盖现有程序。
 
 ## 界面预览
 
-以下八张图片均为 **v1.3.0** 手机实机截图，展示服务管理、人设、常用网页、分类设置、扩展、权限及两套内置后台。
-
 <table width="100%" align="center">
   <tr>
-    <td align="center" width="25%">
-      <img src="./docs/images/home.webp" alt="首页：服务状态、启停与资源占用" width="150" />
-      <p align="center"><strong>首页 · 服务与资源</strong></p>
-    </td>
-    <td align="center" width="25%">
-      <img src="./docs/images/personas.webp" alt="人设：社区市场、搜索与本地预设" width="150" />
+    <td align="center" width="50%">
+      <img src="./docs/images/personas.webp" alt="人设：社区市场、搜索与本地预设" width="240" />
       <p align="center"><strong>人设 · 搜索与切换</strong></p>
     </td>
-    <td align="center" width="25%">
-      <img src="./docs/images/websites.webp" alt="网页：带网站图标的常用地址与内置访问入口" width="150" />
+    <td align="center" width="50%">
+      <img src="./docs/images/websites.webp" alt="网页：带网站图标的常用地址与内置访问入口" width="240" />
       <p align="center"><strong>网页 · 常用地址</strong></p>
-    </td>
-    <td align="center" width="25%">
-      <img src="./docs/images/settings.webp" alt="设置：运行与权限、数据与维护、通用分类" width="150" />
-      <p align="center"><strong>设置 · 分类管理</strong></p>
     </td>
   </tr>
   <tr>
-    <td align="center" width="25%">
-      <img src="./docs/images/extensions.webp" alt="扩展：终端与桌面、远程连接和 AI 工作台" width="150" />
+    <td align="center" width="50%">
+      <img src="./docs/images/settings.webp" alt="设置：运行与权限、数据与维护、通用分类" width="240" />
+      <p align="center"><strong>设置 · 分类管理</strong></p>
+    </td>
+    <td align="center" width="50%">
+      <img src="./docs/images/extensions.webp" alt="扩展：终端与桌面、远程连接和 AI 工作台" width="240" />
       <p align="center"><strong>扩展 · 按需安装</strong></p>
     </td>
-    <td align="center" width="25%">
-      <img src="./docs/images/permissions.webp" alt="权限：Shizuku 授权、后台子进程统计和息屏白名单" width="150" />
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="./docs/images/permissions.webp" alt="权限：Shizuku 授权、后台子进程统计和息屏白名单" width="240" />
       <p align="center"><strong>权限 · 状态与统计</strong></p>
     </td>
-    <td align="center" width="25%">
-      <img src="./docs/images/astrbot-webui.webp" alt="应用内的 AstrBot 管理后台" width="150" />
+    <td align="center" width="50%">
+      <img src="./docs/images/astrbot-webui.webp" alt="应用内的 AstrBot 管理后台" width="240" />
       <p align="center"><strong>AstrBot · 内置后台</strong></p>
-    </td>
-    <td align="center" width="25%">
-      <img src="./docs/images/napcat-webui.webp" alt="应用内的 NapCat 管理后台" width="150" />
-      <p align="center"><strong>NapCat · 内置后台</strong></p>
     </td>
   </tr>
 </table>
 
-## 功能特性
-
-| 功能 | 说明 |
-| --- | --- |
-| 双服务管理 | AstrBot / NapCat 独立或一键启停，查看运行、连接和异常状态 |
-| 内置后台 | 直接打开原 WebUI，预填有效的初始凭据，也可使用外部浏览器 |
-| 固定缩放 | 默认 75%，支持 100% / 75% / 50% / 25%，关闭双指缩放 |
-| 本机互联 | 新装准备 `ws://127.0.0.1:6199/ws`、空 token 的 OneBot 配对，保留自定义连接 |
-| 局域网访问 | 两套 WebUI 可分别开放局域网访问，显示可复制地址，保留后台鉴权 |
-| 人设库 | 内置 4 款参考社区精选整理的预设，注明来源与改编内容；支持自行新增、删除（含内置预设）、搜索、分类和默认切换，提供外部人设市场入口 |
-| 实时日志 | 在服务详情中查看，自动跟随最新输出，可暂停、复制和脱敏导出 |
-| 资源概览 | 显示应用及托管进程内存、手机总内存和占比，单独查看存储使用情况 |
-| 备份与恢复 | 支持本机快照、便携备份和更新回退，自动清理未受保护的旧自动快照 |
-| SSH 扩展 | 默认安装、按需启动，支持修改密码、端口和局域网访问设置 |
-| Ubuntu 终端 | 内置本机交互终端，支持多会话、平滑触摸滚动、方向键与粘贴回车；Android 9 及以上支持选字放大镜 |
-| Ubuntu 桌面 | 按需安装轻量桌面与通用编译工具，内嵌 noVNC，可独立安装或更新原版 ARM64 QQ，保留登录数据 |
-| cpolar 扩展 | 按需安装，内嵌官方 WebUI 登录与隧道管理，默认提供 SSH、AstrBot、NapCat 三个隧道 |
-| DeepSeek Harness | 按需准备独立 Node.js 与官方工作台，显示分阶段安装进度，可选局域网访问，自行配置模型 |
-| 常用网页 | 自定义 HTTP / HTTPS 网址，自动获取图标，在应用内访问并保存各页面缩放比例 |
-| 权限管理 | 提供官方 Shizuku 离线安装入口，检查后台子进程数量与有效上限，按需设置本应用的息屏省电白名单 |
-| Android 设备访问 | 默认关闭，分别授权终端工具读屏、点击和输入；支持设备状态查询与共享目录文件交换 |
-| 中英文界面 | 支持跟随系统、简体中文与 English，覆盖管理界面、通知与操作提示 |
-| 后台引导 | 提供通知、电池优化、后台无限制、自启动权限及任务锁定入口，可选择在最近任务中隐藏 |
-| 更新管理 | App 检查新版后可选择内置下载校验安装，或交给外部浏览器下载；AstrBot、NapCat 独立更新 |
-
-设置、扩展和权限采用分类标题与分组卡片，连续排列，小屏或大字号下可滚动。底部“网页”默认提供 DeepSeek 用量页，可自行增删网址。桌面与 QQ 下载显示大小、进度和速度，下载阶段可暂停、继续或停止。进入服务详情后，底部导航切换为该服务的概览、连接、凭据和日志，凭据页可重置忘记的后台密码或口令。
-
 ## 项目架构
 
-原生 App 负责界面、前台服务和进程管理，AstrBot 与 NapCat 在本机 PRoot Ubuntu 中运行。默认 QQ 消息通过 OneBot 连接 AstrBot，再调用用户配置的模型；终端与扩展分别管理，设备访问由用户按需开启和授权。
+```
+Android App（Kotlin / Jetpack Compose）
+├─ RuntimeService（前台服务 · 进程监督 · 端口与日志）
+├─ PRoot Ubuntu 24.04（内置运行镜像）
+│  ├─ AstrBot 4.29.3 ── WebUI 6185
+│  ├─ Linux QQ 3.2.34 ── SnowLuma 原生 hook
+│  ├─ SnowLuma 2.2.1 ── WebUI 5099 ── OneBot v11 反向 WS → AstrBot
+│  ├─ Xvfb / Fluxbox / noVNC ── 内置桌面
+│  ├─ 终端 / SSH / DeepSeek Harness
+│  └─ /persistent 用户数据与备份
+└─ WebView ── 内置后台与网页
+```
 
-<p align="center">
-  <a href="./docs/images/architecture.webp"><img src="./docs/images/architecture.webp" alt="项目架构：Android 原生 App 管理 PRoot Ubuntu 中的服务，展示默认 QQ 消息链路、可选扩展与设备访问" width="1000" /></a>
-</p>
+消息链路：
+
+```
+QQ 客户端（手机内核上的 Linux QQ）
+        │  SnowLuma 注入
+        ▼
+SnowLuma 运行时 ── OneBot v11 反向 WebSocket ──► AstrBot ──► 大模型
+        │
+        └─ WebUI 5099（账号、连接、日志）
+```
 
 ## 开始使用
 
-1. 从 [Releases](https://github.com/JunWan666/astrbot-for-android/releases/latest) 下载完整 APK，在 ARM64 Android 手机上安装，打开 App 完成环境初始化。
-2. 点击“启动全部”，等待 AstrBot 和 NapCat 就绪。
-3. 打开 NapCat 后台登录 QQ，在 AstrBot 后台配置模型、平台和插件。
-4. 按“设置 → 后台运行”的引导调整手机权限，再按需使用人设、备份、SSH 和 cpolar。“设置 → 权限”提供 Shizuku 的官方离线安装包及授权入口，Android 12 及以上可分别查看本应用、全机已跟踪的后台子进程数量及有效上限，并按需调整上限；安装后仍需启动和授权 Shizuku。系统未公开的数量不会显示为 0。
+### 环境要求
 
-完整包内置运行环境，初始化无需另外下载 Ubuntu 或安装项目依赖。QQ 登录、模型调用和在线更新需要网络，账号与 API Key 直接在对应 WebUI 中配置。更多操作见[使用指南](docs/使用指南.md)。
+- Android 8.0（API 26）及以上，**ARM64** 手机，无需 Root。
+- 建议至少预留 3 GB 可用空间（首次解包运行环境约 2.1 GB）。
+- 首次初始化环境、安装桌面依赖和下载 QQ 时需要联网；AstrBot 与运行环境随 APK 提供，不依赖外部下载。
 
-### 设备与空间
+### 安装步骤
 
-- Android 8.0 / API 26 及以上，ARM64 架构，无需手机 Root。
-- 完整 APK 约 **720 MiB**，安装后还需为运行环境、QQ 数据和备份预留空间。
-- 环境准备空间不足时显示预估提醒，可选择“仍然继续”；实际可写空间耗尽仍会导致操作失败。
-- 运行占用随插件、模型调用及 QQ 状态变化；首页显示实际应用内存，不预分配虚拟机内存。
-- 持续运行需要按手机系统设置后台权限，应用目前不提供开机自动启动。
+1. 从 [Releases](https://github.com/HZP-BT/astrbot-for-android-snowluma/releases/latest) 下载 ARM64 安装包并安装。
+2. 打开应用完成 Ubuntu 运行环境初始化，等待解包完成。
+3. 在首页点击 **启动全部**，启动 AstrBot；进入 AstrBot 后台完成初始密码设置、模型提供商和默认模型配置。
+4. 在首页 **Ubuntu 桌面** 卡片点详情，安装桌面依赖和原版 QQ；然后点 **启动桌面** 并在内置桌面中扫码登录 QQ。
+5. 在首页 **SnowLuma** 卡片点详情，阅读并确认官方许可后安装 SnowLuma（固定 v2.2.1），再回到卡片点 **启动 SnowLuma**。
+6. 打开 SnowLuma 后台（`127.0.0.1:5099`），用启动日志中的初始密码登录并修改密码，为账号添加 OneBot 反向 WebSocket 客户端（见下节）。
+7. 用另一个 QQ 账号私聊机器人账号，确认消息往返。
 
-cpolar 在“设置 → 扩展组件”中单独下载安装，客户端不打入 APK。登录官方 WebUI 后自动保存令牌，可管理三个默认隧道；隧道目标服务需在 App 中启动，服务能力以 cpolar 账号套餐为准。
+> 便携备份不包含 QQ 会话目录；卸载应用或清除数据会删除本机快照，重要数据请先导出到应用外。QQ 登录在桌面中完成，更换设备或重装后需要重新扫码。
 
-## 可选方案：SnowLuma 内置扩展
+## SnowLuma 接入说明
 
-本构建在首页「我的服务」提供 **SnowLuma** 服务卡（详情进入扩展页）：安装时由用户发起，从[官方 Release](https://github.com/SnowLuma/SnowLuma/releases/tag/v2.2.1) 下载 Linux ARM64 完整包并校验 SHA-256，解压到应用私有目录并写好原版 QQ 的启动注入配置；启动时自动拉起 Ubuntu 桌面和原版 QQ，再运行 SnowLuma，后台地址为 `http://127.0.0.1:5099`。
+### OneBot 连接配置
 
-- **与 NapCat 互斥**：启动 SnowLuma 会停止 NapCat，启动 NapCat 会停止 SnowLuma，同一时间只桥接一个 QQ 会话；成功启动过一次后首页「启动全部」优先启动 SnowLuma。
-- **首页精简**：首页「我的服务」不再显示 NapCat，只保留 AstrBot、Ubuntu 桌面与 SnowLuma；「启动全部」只启动 AstrBot，安装了 SnowLuma 时同时启动 SnowLuma。NapCat 仍保留在设置的程序更新中。
-- **版本锁定**：固定 SnowLuma v2.2.1（本项目教程实测组合）；v2.3.x 更换原生 hook 后，在 Linux QQ 3.2.34-53644 上注入会导致 QQ 进程退出（upstream #622）。
-- **AstrBot 无需改建连接**：SnowLuma 作为反向 WS 客户端连接默认的 `ws://127.0.0.1:6199/ws`，首次只需在 SnowLuma 后台添加 WS 客户端。
-- 使用方式与排错见 [SnowLuma 扩展说明](docs/SnowLuma扩展.md)；不用扩展时仍可按[手动部署教程](docs/SnowLuma手动部署.md)操作。
+在 SnowLuma 后台进入账号的 **OneBot 协议端点**，添加 **WS 客户端（反向连接）**：
 
-**许可提醒**：SnowLuma 采用**源码可见非商业许可**，原生组件另受 EULA 约束。EULA 第 5.4 条要求将专有组件并入第三方安装包、通过自动化脚本部署或用于商业用途前取得著作权人书面授权。本扩展按设备持有人个人非商业自用、从官方 Release 获取原包的方式工作，不随 APK 分发 SnowLuma 程序；**公开分发包含此扩展的构建前，请先取得授权**。该项目原版默认仍为 NapCat，本扩展不代表上游背书。
+| 项目 | 填写内容 |
+| --- | --- |
+| 类型 | WebSocket 客户端 / WS Client（反向连接） |
+| 地址 | `ws://127.0.0.1:6199/ws`（与 AstrBot 的 OneBot 端口一致） |
+| Token | 与 AstrBot 的 OneBot 连接相同，默认留空 |
+| 角色 | `Universal` |
+| 消息格式 | `array` |
+| 启用 | 开 |
 
-## 可选方案：SnowLuma 手动部署
+AstrBot 侧只保留一条启用的 OneBot v11 连接：反向 WebSocket 主机 `127.0.0.1`、端口 `6199`（或自定义且两边一致）、Token 留空。保存后 SnowLuma 的客户端应显示“已连接”，AstrBot 的连接状态也会变为已连接。
 
-[SnowLuma](https://github.com/SnowLuma/SnowLuma) 是另一个提供 OneBot v11 接口的 QQ 互操作项目。[NapCat README](https://github.com/NapNeko/NapCatQQ#new-framework-) 推荐其作为 **NapCat Gui 替代品**；希望了解其他接入方式的用户，可以阅读本项目整理的[手机手动部署与 AstrBot 对接教程](docs/SnowLuma手动部署.md)。
+### WebUI 密码
 
-教程使用 App 的通用 Ubuntu、桌面、原版 QQ 和终端，由用户另行获取官方完整包、手动部署并连接 AstrBot。App 默认方案仍为 NapCat，使用本教程时保持 NapCat 停止。SnowLuma 采用**源码可见非商业许可**，原生组件另有专有条款；请先阅读官方 [LICENSE](https://github.com/SnowLuma/SnowLuma/blob/v2.2.1/LICENSE) 和 [EULA](https://github.com/SnowLuma/SnowLuma/blob/v2.2.1/EULA.md)。本仓库不附带其程序；内置扩展在安装时从官方 Release 获取原包，不代表上游背书或额外授权。
+SnowLuma 的登录凭据保存在程序目录的 `config/webui.json`，应用日志会脱敏密码。忘记密码或更新后密码失效时，停止 SnowLuma，在 Ubuntu 终端执行：
+
+```bash
+cd /manager/extensions/snowluma/program && rm -f config/webui.json
+```
+
+```bash
+HOME=/persistent/snowluma/home XDG_CONFIG_HOME=/persistent/snowluma/home/.config XDG_DATA_HOME=/persistent/snowluma/home/.local/share XDG_CACHE_HOME=/persistent/snowluma/home/.cache SNOWLUMA_HOOK_AUTOLOAD=0 SNOWLUMA_WEBUI_HOST=127.0.0.1 SNOWLUMA_WEBUI_PORT=5099 SNOWLUMA_WEBUI_BOOTSTRAP_PASSWORD='Snowluma@2026' /usr/bin/python3 /manager/extensions/desktop/guest-compat ./node ./index.mjs
+```
+
+用 `admin` / `Snowluma@2026` 登录后修改密码，按 Ctrl+C 结束，再从首页启动 SnowLuma。
+
+### 手机访问不了 GitHub
+
+安装器会尝试官方 Release 并自动重试。网络受限时可离线安装：把官方包 `SnowLuma-v2.2.1-linux-arm64.tar.gz` 通过应用的文件交换导入 `/android-share`，在 Ubuntu 终端执行：
+
+```bash
+mkdir -p /manager/extensions/snowluma && cp /android-share/SnowLuma-v2.2.1-linux-arm64.tar.gz /manager/extensions/snowluma/package.tar.gz
+```
+
+再回 SnowLuma 详情页点安装，安装器会复用校验通过的包。
+
+### 版本说明
+
+- 本项目固定 **SnowLuma v2.2.1**，这是完成手机端消息往返验证的版本。
+- v2.3.x 更换了原生 hook，在 Linux QQ 3.2.34-53644 上注入会导致 QQ 进程退出；Android/PRoot 环境也不在上游可用性保证范围内。若要切换版本，请使用 `tools/snowluma-switch-2.2.1.sh`，它会保留配置与密码。
 
 ## 源码构建
 
-使用 JDK 17、Android SDK 35、NDK 和 Python 3.11+。编译应用源码：
+### 环境
 
-```powershell
-./gradlew.bat :core:compileKotlin :app:compileBootstrapReleaseKotlin
+- JDK 17、Android SDK 35、Android NDK 27.0.12077973、Python 3.11+。
+- 只编译源码：
+
+```bash
+./gradlew :core:compileKotlin :app:compileBootstrapReleaseKotlin
 ```
 
-完整 APK 需要另外准备运行镜像、原生资源和许可输入，大型资源与本机配置不进入 Git。准备好输入和长期签名后，Windows 双击根目录 `build.bat`，其他系统执行 `python3 -B tools/build_release.py`，即可完成正式构建、签名和校验。默认输出到 `dist/`，具体步骤见[构建指南](docs/构建指南.md)。
+### 完整 APK
 
-长期密钥及密码位于 Git 已忽略的 `.local/signing/`，后续版本持续复用；首次创建与备份方法见[一键构建正式包](docs/构建指南.md#一键构建正式包)。
+完整包需要运行镜像、原生库和发行资产。构建前准备 `runtimeAssetsDir`、`distributionAssetsDir`、`optionalAssetsDir` 和 `nativeLibsDir`（路径写入 `local.properties`），并在 `.local/signing/` 配置 PKCS12 签名，然后执行：
 
-## 更新
+```bash
+./gradlew -PbundledRuntime=true :app:assembleBundledRelease
+```
 
-“设置 → 关于 → 检查更新”管理 App 安装包：发现新版后弹窗显示说明，可选择“下载并安装”或使用外部浏览器下载。内置下载完成后自动校验，再进入系统安装器；缺少安装权限时引导授权，返回后继续。当前已是适用的最新版本时会明确提示。AstrBot 与 NapCat 各有独立的程序更新入口。内置流程保留签名校验、断点续传、安装前快照和组件失败回退，APK 安装由系统确认。
+### 校验
 
-默认接入本项目的 GitHub 签名更新通道：**Releases 存放安装包和 AstrBot 程序包，`updates` 分支托管签名目录，NapCat 直接下载上游官方 Shell 包**。只有 QQ、Python 或底层依赖变化时，才需要匹配的运行环境升级。配置方式见[更新与分发](docs/更新与分发.md)。
+```bash
+apksigner verify --verbose --min-sdk-version 21 app-bundled-release.apk
+```
 
-## 交流与反馈
+```bash
+aapt2 dump badging app-bundled-release.apk
+```
 
-<p align="center">
-  <a href="https://qm.qq.com/q/fS2CdoBQB2"><img src="./docs/images/qq-community.svg" alt="加入 QQ 交流群" width="220" /></a>
-</p>
+发布前确认 APK 仅包含 `arm64-v8a`、签名方案 v1/v2/v3 全部通过，且包内 `assets/bootstrap/arm64-v8a/ubuntu.tar.bin` 的 SHA-256 与 manifest 一致。
 
-欢迎加入 QQ 交流群，交流 App 使用、AstrBot / NapCat 配置、人设分享和功能建议。也可以通过 [GitHub Issues](https://github.com/JunWan666/astrbot-for-android/issues) 反馈问题，便于跟进和检索。
+自行构建安装包有困难可以加 Q：2176317027。
 
-## 文档
+## 常见问题
 
-- [使用指南](docs/使用指南.md)：后台配置、人设、网页、权限、设备访问、扩展、资源和备份。
-- [SnowLuma 扩展说明](docs/SnowLuma扩展.md)：在 App 内安装、启动 SnowLuma 并连接 AstrBot，含许可提醒与排错。
-- [SnowLuma 手动部署](docs/SnowLuma手动部署.md)：官方原包的手机手动部署、AstrBot 对接、常见问题及来源许可。
-- [构建指南](docs/构建指南.md)：开发环境、运行资源和 APK 构建。
-- [更新与分发](docs/更新与分发.md)：应用签名、更新通道和 GitHub 发布。
-- [发行材料](docs/发行材料.md)：第三方许可、依赖清单和源码伴随包。
-- [更新记录](docs/CHANGELOG.md) · [参与开发](.github/CONTRIBUTING.md) · [提交规则](.github/GIT_COMMIT_RULES.md)。
+### 首页显示“本机端口 6185 已被占用”
 
-## 开源协议与致谢
+旧版本在进程被系统强杀后可能留下 AstrBot 孤儿进程。新版本会在启动前和停止后自动清理并等待端口释放；如果仍然出现，检查是否有从终端手动启动的 AstrBot 实例。
 
-本项目原创代码采用 [MIT License](LICENSE)，**Copyright © 2026 [JunWan666](https://github.com/JunWan666)**。使用或分发时请保留版权声明和许可文本。
+### 桌面或服务运行一段时间后自动停止（退出码 137）
 
-感谢 [AstrBot](https://github.com/AstrBotDevs/AstrBot)、[NapCatQQ](https://github.com/NapNeko/NapCatQQ)、[PRoot](https://github.com/proot-me/proot)、Ubuntu、Termux 及相关开源项目。第三方组件遵循各自的许可与分发条款，详见 [NOTICE](docs/legal/NOTICE) 和 [第三方声明](docs/legal/THIRD_PARTY_NOTICES.md)。
+137 表示被系统强制杀死，常见原因是 Android 12+ 的后台子进程限制（默认约 32 个）或内存不足。请在 **设置 → 权限** 中使用 Shizuku 查看并调高后台子进程上限（256 为参考值），把应用加入息屏省电白名单，并关闭不用的终端与服务。
 
-## Star History
+### SnowLuma 启动后 QQ 退出
 
-<div align="center">
-  <a href="https://www.star-history.com/?repos=JunWan666%2Fastrbot-for-android&amp;type=date&amp;legend=top-left">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=JunWan666/astrbot-for-android&amp;type=date&amp;theme=dark&amp;legend=top-left" />
-      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=JunWan666/astrbot-for-android&amp;type=date&amp;legend=top-left" />
-      <img src="https://api.star-history.com/chart?repos=JunWan666/astrbot-for-android&amp;type=date&amp;legend=top-left" alt="AstrBot for Android Star History" width="680" />
-    </picture>
-  </a>
-</div>
+确认使用的是 v2.2.1，而不是 2.3.x；v2.3.x 的原生 hook 在 Linux QQ 3.2.34-53644 上会触发此问题。必要时用 `tools/snowluma-switch-2.2.1.sh` 切回 v2.2.1。
+
+### SnowLuma 后台密码错误或忘记
+
+按上文“WebUI 密码”重置；安装/切换版本会保留 `config` 与 `data`，正常升级不会清除密码。
+
+## 更新记录与文档
+
+- [更新记录](./docs/CHANGELOG.md)
+- [使用指南](./docs/使用指南.md)：后台配置、人设、网页、权限、扩展、资源和备份。
+- [SnowLuma 扩展说明](./docs/SnowLuma扩展.md)：安装、启动、对接、离线安装、版本切换与排错。
+- [构建指南](./docs/构建指南.md)
+- [参与开发](.github/CONTRIBUTING.md) · [提交规则](.github/GIT_COMMIT_RULES.md)
+
+## 贡献者
+
+- **HZP-BT** — 项目维护者：SnowLuma 集成、首页服务卡、安装与发布流程
+- JunWan666 — 上游项目作者（基础版本）
+
+## 许可证与致谢
+
+本项目原创代码采用 [MIT License](./LICENSE)。基础版本来自 [JunWan666/astrbot-for-android](https://github.com/JunWan666/astrbot-for-android)，感谢原作者与所有贡献者。
+
+本项目不隶属、也不代表腾讯 / QQ 或 SnowLuma 官方。SnowLuma 采用源码可见非商业许可，原生组件受其 EULA 约束；第三方打包、自动化部署与商业使用需事先取得著作权人书面授权。QQ 客户端及相关组件的版权归腾讯公司所有。请仅将本项目用于个人学习与技术研究，遵守 QQ 用户协议与适用法律；使用非官方协议工具接入存在账号风险，请自行评估。
+
+分享日志或截图时请隐藏账号、二维码、密码、Token 与 API Key。

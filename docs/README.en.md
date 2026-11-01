@@ -1,224 +1,127 @@
 <div align="center">
   <img src="./images/logo.png" alt="AstrBot for Android" width="120" />
-  <h1>AstrBot for Android</h1>
+  <h1>AstrBot for Android · SnowLuma Edition</h1>
   <p><a href="../README.md">简体中文</a> | <strong>English</strong></p>
-  <p><strong>Run AstrBot and NapCat on your Android device.</strong></p>
-  <p><strong>This branch adds SnowLuma as an alternative to NapCat.</strong></p>
-  <p>One APK · Local execution · Native management · Built-in WebUIs</p>
+  <p><strong>Run AstrBot, SnowLuma and QQ on your Android device.</strong></p>
+  <p>One APK · Local execution · Native management · Built-in desktop and WebUIs</p>
   <p>
     <img src="https://img.shields.io/badge/Kotlin-2.1.20-7F52FF?style=for-the-badge&amp;logo=kotlin&amp;logoColor=white" alt="Kotlin" />
     <img src="https://img.shields.io/badge/Jetpack_Compose-Native_UI-4285F4?style=for-the-badge&amp;logo=jetpackcompose&amp;logoColor=white" alt="Jetpack Compose" />
     <img src="https://img.shields.io/badge/Ubuntu-PRoot-E95420?style=for-the-badge&amp;logo=ubuntu&amp;logoColor=white" alt="PRoot Ubuntu" />
   </p>
   <p>
-    <a href="https://github.com/JunWan666/astrbot-for-android/releases/latest"><img src="https://img.shields.io/badge/Version-1.3.0-3867FF?style=flat-square" alt="Version 1.3.0" /></a>
+    <a href="https://github.com/HZP-BT/astrbot-for-android-snowluma/releases/latest"><img src="https://img.shields.io/badge/Version-1.3.0s6-3867FF?style=flat-square" alt="Version 1.3.0s6" /></a>
     <img src="https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=flat-square&amp;logo=android&amp;logoColor=white" alt="Android 8.0 and above" />
     <img src="https://img.shields.io/badge/Architecture-ARM64-64748B?style=flat-square" alt="ARM64" />
     <a href="../LICENSE"><img src="https://img.shields.io/badge/License-MIT-18A978?style=flat-square" alt="MIT License" /></a>
-    <img src="https://img.shields.io/badge/Fork-SnowLuma-0A7E8C?style=flat-square" alt="SnowLuma fork" />
-    <a href="https://github.com/JunWan666"><img src="https://img.shields.io/badge/Author-JunWan666-111827?style=flat-square&amp;logo=github" alt="JunWan666" /></a>
+    <img src="https://img.shields.io/badge/SnowLuma-v2.2.1-0A7E8C?style=flat-square" alt="SnowLuma 2.2.1" />
+    <a href="https://github.com/HZP-BT"><img src="https://img.shields.io/badge/Maintainer-HZP--BT-111827?style=flat-square&amp;logo=github" alt="HZP-BT" /></a>
   </p>
   <p>
-    <a href="https://github.com/JunWan666/astrbot-for-android/releases/latest">Upstream APK</a> ·
-    <a href="#changes-in-this-branch">Changes in this branch</a> ·
-    <a href="#screenshots">Screenshots</a> ·
+    <a href="#features">Features</a> ·
     <a href="#architecture">Architecture</a> ·
     <a href="#getting-started">Getting started</a> ·
-    <a href="#optional-setup-snowluma">SnowLuma manual setup</a> ·
+    <a href="#snowluma-setup">SnowLuma setup</a> ·
+    <a href="#building-from-source">Build</a> ·
+    <a href="#troubleshooting">Troubleshooting</a> ·
     <a href="./使用指南.md">User guide (Chinese)</a> ·
-    <a href="#building-from-source">Build from source</a> ·
-    <a href="./CHANGELOG.md">Changelog (Chinese)</a>
+    <a href="./CHANGELOG.md">Changelog</a>
   </p>
 </div>
-
-> **This is a personal branch of [JunWan666/astrbot-for-android](https://github.com/JunWan666/astrbot-for-android).** It adds **SnowLuma** as an alternative QQ bridge alongside AstrBot + NapCat: install and start it under Settings → Runtime extensions → QQ bridge. SnowLuma and NapCat are mutually exclusive, and AstrBot keeps its existing reverse connection on port 6199. This repository contains source only — no APK, runtime image or account data.
-
-## Changes in this branch
-
-- **SnowLuma extension**: official release download with SHA-256 verification, extraction, guest-compat startup injection, start/stop and WebUI/log entries; starting it brings up the Ubuntu desktop and original QQ.
-- **Mutually exclusive with NapCat**: starting one stops the other; once SnowLuma has been started, "Start all" prefers it.
-- **Standalone script**: `tools/snowluma-standalone.sh` for installing and running it in an existing Ubuntu terminal without rebuilding the APK.
-- **Docs**: new SnowLuma extension guide (Chinese), updated README, user guide and changelog.
-- **License note**: SnowLuma uses a source-available non-commercial license and its native components are bound by EULA section 5.4; obtain authorization before public distribution.
-
-A complete APK needs runtime assets and signing inputs outside this repository; see the extension guide (Chinese). Official APKs remain available from the upstream releases.
 
 ## Overview
 
-**AstrBot for Android** (AstrBot 运行管理器) is an Android application for deploying and managing AstrBot and NapCat locally. A single APK bundles the PRoot Ubuntu environment and service components, providing environment setup, service controls, status monitoring, logs, backup and restore, and independent online updates. Root access is not required.
+**AstrBot for Android (SnowLuma Edition)** runs AstrBot and SnowLuma entirely on an Android phone. A single APK bundles a PRoot Ubuntu environment, AstrBot, Linux QQ, a lightweight Ubuntu desktop and SnowLuma; the native management UI handles runtime setup, service start/stop, QQ sign-in, model configuration and embedded WebUIs. **No root is required.**
 
-Built with Kotlin and Jetpack Compose, the app provides a native management interface in Simplified Chinese and English and embeds the AstrBot and NapCat WebUIs in a WebView. Users can sign in to QQ, configure model providers and plugins, manage personas, enable LAN access, and use SSH and cpolar tunneling extensions directly from their phone.
+AstrBot provides models, platforms, plugins and personas. SnowLuma converts the signed-in Linux QQ session into OneBot v11 events and actions, and connects back to AstrBot over a reverse WebSocket. QQ sign-in happens in the built-in desktop by scanning a QR code.
 
-Current version: **1.3.0**. This update adds website bookmarks, Shizuku permission management, Android device access for terminal tools and an optional DeepSeek Harness extension. It also groups settings and improves service readiness, download progress, terminal selection and process management. See the [changelog (Chinese)](CHANGELOG.md) for the full list of changes.
-
-## Screenshots
-
-Captured from **v1.3.0** on an Android phone. The eight screens show service management, personas, website bookmarks, grouped settings, extensions, permissions and both embedded WebUIs.
-
-<table width="100%" align="center">
-  <tr>
-    <td align="center" width="25%">
-      <img src="./images/home.webp" alt="Home: service status, controls and resource usage" width="150" />
-      <p align="center"><strong>Home · Services &amp; resources</strong></p>
-    </td>
-    <td align="center" width="25%">
-      <img src="./images/personas.webp" alt="Personas: marketplace, search and local presets" width="150" />
-      <p align="center"><strong>Personas · Search &amp; switch</strong></p>
-    </td>
-    <td align="center" width="25%">
-      <img src="./images/websites.webp" alt="Websites: saved addresses, site icons and built-in browsing" width="150" />
-      <p align="center"><strong>Websites · Quick access</strong></p>
-    </td>
-    <td align="center" width="25%">
-      <img src="./images/settings.webp" alt="Settings: runtime, permissions, maintenance and general options" width="150" />
-      <p align="center"><strong>Settings · Grouped menus</strong></p>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" width="25%">
-      <img src="./images/extensions.webp" alt="Extensions: terminal, desktop, remote access and AI workspace" width="150" />
-      <p align="center"><strong>Extensions · On demand</strong></p>
-    </td>
-    <td align="center" width="25%">
-      <img src="./images/permissions.webp" alt="Permissions: Shizuku, child process statistics and idle exemption" width="150" />
-      <p align="center"><strong>Permissions · Live status</strong></p>
-    </td>
-    <td align="center" width="25%">
-      <img src="./images/astrbot-webui.webp" alt="AstrBot dashboard inside the app" width="150" />
-      <p align="center"><strong>AstrBot · Built-in WebUI</strong></p>
-    </td>
-    <td align="center" width="25%">
-      <img src="./images/napcat-webui.webp" alt="NapCat dashboard inside the app" width="150" />
-      <p align="center"><strong>NapCat · Built-in WebUI</strong></p>
-    </td>
-  </tr>
-</table>
-
-The screenshots show the app in Simplified Chinese. English is also available in Settings → Language.
+The current release is **1.3.0-snowluma-6** and pins **SnowLuma v2.2.1**, the version verified on this stack.
 
 ## Features
 
-| Feature | Description |
-| --- | --- |
-| Service management | Start or stop AstrBot and NapCat individually or together; view service health, connection status and errors. |
-| Built-in WebUIs | Open the original WebUIs with valid initial credentials prefilled, or use an external browser. |
-| Fixed zoom | Defaults to 75%, with 100% / 75% / 50% / 25% options; pinch zoom is disabled. |
-| Local connectivity | New installations prepare a OneBot connection to `ws://127.0.0.1:6199/ws` with an empty token, preserving custom connections. |
-| LAN access | Enable LAN access for each WebUI independently, copy its address, and retain WebUI authentication. |
-| Persona library | Includes 4 presets adapted from community featured prompts, with attribution and adaptation notes. Add, delete (including presets), search, filter by category and switch the default persona. Includes a link to an external persona marketplace. |
-| Live logs | Follow the latest service output automatically, pause updates, copy logs or export them with sensitive data redacted. |
-| Resource overview | View memory usage for the app and managed processes, total device memory and the usage percentage. Storage usage is shown separately. |
-| Backup and restore | Create local snapshots and portable backups, roll back updates, and automatically remove old unprotected automatic snapshots. |
-| SSH extension | Installed by default and started on demand, with configurable password, port and LAN access. |
-| Ubuntu terminal | Built-in local shell with multiple sessions, smooth touch scrolling, arrow keys, paste and Enter. Text selection magnifier on Android 9 and later. |
-| Ubuntu desktop | Optional lightweight desktop and general build tools, with an embedded noVNC viewer. Install or update independent original ARM64 QQ while preserving login data. |
-| cpolar extension | Install on demand and sign in through the official embedded WebUI. Includes SSH, AstrBot and NapCat tunnel presets. |
-| DeepSeek Harness | Optional independent Node.js runtime and official AI workspace, with staged installation progress and optional LAN access. |
-| Website bookmarks | Save HTTP / HTTPS addresses, load website icons automatically and open pages inside the app with per-site zoom settings. |
-| Permission management | Install the official Shizuku APK offline, inspect tracked child processes and their effective limit, and optionally exempt this app from Android idle restrictions. |
-| Android device access | Disabled by default; separately allow screen reading and input for local terminal tools, with device state queries and shared file exchange. |
-| App language | Choose system default, Simplified Chinese or English for the management interface, notifications and app messages. |
-| Background setup | Access notification, battery optimization, unrestricted background usage and auto-start settings, with guidance for locking the app in recent tasks and an option to hide its task cards. |
-| Updates | Review release notes and choose in-app download with verification and installation, or download in an external browser. AstrBot and NapCat update independently. |
-
-Settings, extensions and permissions use section headings and grouped cards in a continuous menu, with scrolling on small screens or at larger font sizes. Opening a service switches the bottom navigation to that service's overview, connections, credentials and logs. Its credentials page can reset a forgotten WebUI password or access token.
-
-The Websites tab stores custom HTTP / HTTPS bookmarks, with the DeepSeek usage page provided by default. Website icons load automatically, with an initial as fallback. Pages open inside the app and remember zoom for each bookmark. Desktop and original QQ downloads display bytes, total size, percentage and speed, with pause, resume and stop during download. Partial files are kept for verified reuse; package installation runs to completion.
+- **Self-contained runtime**: Ubuntu 24.04.3, AstrBot 4.29.3, Linux QQ 3.2.34, Xvfb/Fluxbox/noVNC and dependencies are bundled for offline setup.
+- **Native service management**: home screen cards for AstrBot, Ubuntu desktop and SnowLuma with start/stop, WebUI and details.
+- **SnowLuma integration**: official release download with SHA-256 verification, guest-compat startup injection, WebUI on `127.0.0.1:5099`, OneBot v11 reverse WebSocket to AstrBot.
+- **Pinned and preserved**: SnowLuma v2.2.1 is pinned; reinstalling or switching versions keeps `config` and `data`, including the WebUI password.
+- **Crash recovery**: leftover processes from system kills (exit code 137) are reaped and ports are released before restart.
+- **Desktop, terminal and extensions**: built-in Ubuntu desktop for QQ sign-in, terminal and SSH, optional DeepSeek Harness and cpolar.
+- **Backups and safety**: local snapshots and portable backups, redacted logs, SHA-256 verification for every download.
 
 ## Architecture
 
-The native app provides the interface, foreground service and process management. AstrBot and NapCat run locally in PRoot Ubuntu; the default QQ message path uses OneBot to connect to AstrBot and the user's model provider. The terminal and extensions have separate controls, while Android device access is enabled and authorized by the user.
-
-<p align="center">
-  <a href="./images/architecture.en.webp"><img src="./images/architecture.en.webp" alt="Architecture: the native Android app manages services in PRoot Ubuntu, with the default QQ message path, optional extensions and device access" width="1000" /></a>
-</p>
+```
+Android App (Kotlin / Compose)
+├─ RuntimeService — foreground service, supervision, ports and logs
+├─ PRoot Ubuntu 24.04 (bundled image)
+│  ├─ AstrBot 4.29.3 — WebUI 6185
+│  ├─ Linux QQ 3.2.34 — SnowLuma native hook
+│  ├─ SnowLuma 2.2.1 — WebUI 5099 — OneBot v11 reverse WS → AstrBot
+│  ├─ Xvfb / Fluxbox / noVNC — desktop
+│  └─ Terminal / SSH / DeepSeek Harness
+└─ WebView — embedded panels
+```
 
 ## Getting started
 
-1. Download the full APK from [Releases](https://github.com/JunWan666/astrbot-for-android/releases/latest), install it on an ARM64 Android device, then open the app and initialize the environment.
-2. Tap **Start all** and wait for AstrBot and NapCat to become ready.
-3. Open the NapCat WebUI to sign in to QQ, then configure model providers, messaging platforms and plugins in the AstrBot WebUI.
-4. Follow **Settings → Background running** to adjust device permissions, then configure personas, backups, SSH and cpolar as needed. **Settings → Permissions** provides an official offline Shizuku installer. On Android 12 and later, it separately displays tracked child process counts for this app and the device, plus the effective limit, which you can adjust if needed. Unavailable counts are never reported as zero. Start and authorize Shizuku after installation.
+1. Install the ARM64 APK from [Releases](https://github.com/HZP-BT/astrbot-for-android-snowluma/releases/latest).
+2. Open the app and initialize the Ubuntu runtime (about 2.1 GB unpacked; keep 3 GB free).
+3. Tap **Start all** to start AstrBot, then configure the dashboard password, a model provider and the default model.
+4. Open the **Ubuntu desktop** card, install desktop dependencies and the original QQ, start the desktop and sign in to QQ.
+5. Open the **SnowLuma** card, accept the official license, install SnowLuma (v2.2.1) and start it.
+6. Open `http://127.0.0.1:5099`, sign in with the initial password, change it, and add a reverse WebSocket client for the account.
+7. Test with another QQ account.
 
-The full APK includes the runtime environment, so initialization does not require a separate Ubuntu download or dependency installation. QQ sign-in, model API calls and online updates require network access. Enter account credentials and API keys directly in the relevant WebUI. See the [user guide (Chinese)](使用指南.md) for more details.
+## SnowLuma setup
 
-### Device and storage requirements
+Add a **WebSocket client (reverse connection)** in the account's OneBot endpoints:
 
-- Android 8.0 / API 26 or later, with an ARM64 processor. Root access is not required.
-- The full APK is approximately **720 MiB**. Allow additional storage for the extracted environment, QQ data and backups.
-- If free space is below the runtime preparation estimate, a warning offers **Continue anyway**. Running out of writable storage can still cause the operation to fail.
-- Resource usage varies with plugins, model calls and QQ activity. Home displays actual app memory usage; the app does not preallocate memory for a virtual machine.
-- Continuous operation requires appropriate background permissions on the device. The app currently does not start automatically at boot.
+| Field | Value |
+| --- | --- |
+| Type | WebSocket client (reverse) |
+| URL | `ws://127.0.0.1:6199/ws` (same port as AstrBot) |
+| Token | Same as AstrBot's OneBot connection; empty by default |
+| Role | `Universal` |
+| Format | `array` |
+| Enabled | yes |
 
-Install cpolar separately in **Settings → Runtime extensions**; its client is not bundled in the APK. Sign in through its official WebUI to save the token automatically and manage the three default tunnels. Start each target service in the app before using its tunnel. Features depend on your cpolar account plan.
+Keep a single enabled OneBot v11 connection in AstrBot on `127.0.0.1:6199`. Once saved, SnowLuma should show the client as connected and AstrBot should report the reverse connection as connected.
 
-## Optional setup: SnowLuma
+If GitHub is unreachable from the phone, import `SnowLuma-v2.2.1-linux-arm64.tar.gz` through the app's file exchange into `/android-share`, copy it to `/manager/extensions/snowluma/package.tar.gz` from the Ubuntu terminal, and tap install again.
 
-This build adds a **SnowLuma** entry under **Settings → Runtime extensions → QQ bridge**. On install, at the user's request, it fetches the official Linux ARM64 release from GitHub, verifies it against a pinned SHA-256, extracts it into the app's private directory and writes the original-QQ startup injection profile. Starting it launches the Ubuntu desktop and original QQ automatically, then runs SnowLuma; its WebUI is at `http://127.0.0.1:5099`.
-
-- **Mutually exclusive with NapCat**: starting SnowLuma stops NapCat and vice versa, so only one QQ session is bridged at a time. Once SnowLuma has been started, the home screen's "Start all" prefers SnowLuma.
-- **Pinned version**: SnowLuma v2.2.1, the combination verified by this project's guide. v2.3.x replaced the native hook and makes Linux QQ 3.2.34-53644 exit after injection (upstream #622).
-- **No AstrBot reconfiguration**: SnowLuma connects as a reverse WebSocket client to the default `ws://127.0.0.1:6199/ws`; add a WebSocket client in SnowLuma once.
-- See the [SnowLuma extension guide (Chinese)](SnowLuma扩展.md); the [manual setup guide](SnowLuma手动部署.md) still applies if you prefer to do it by hand.
-
-**License notice**: SnowLuma uses a **source-available non-commercial license**, and its native components are additionally bound by its EULA. Section 5.4 of the EULA requires the copyright holder's prior written authorization to incorporate the proprietary components into a third-party installation package, deploy them through automated scripts or use them commercially. This extension works for the device owner's personal, non-commercial use by fetching the official package from the official release; it does not ship SnowLuma programs with the APK. **Obtain authorization before publicly distributing a build that includes this extension.** The project's default remains NapCat; this extension implies no upstream endorsement.
-
-[SnowLuma](https://github.com/SnowLuma/SnowLuma) is another QQ interoperability project providing OneBot v11 interfaces. The [NapCat README](https://github.com/NapNeko/NapCatQQ#new-framework-) recommends it as an alternative to **NapCat Gui**. See our [manual phone setup and AstrBot connection guide (Chinese)](SnowLuma手动部署.md) for the manual approach.
-
-The guide uses the app's general Ubuntu, desktop, original QQ and terminal features. Users obtain the official full package and set it up themselves, keeping NapCat stopped while using this approach. The app's default setup remains NapCat. SnowLuma uses a **source-available non-commercial license**, with separate proprietary terms for native components; read its [LICENSE](https://github.com/SnowLuma/SnowLuma/blob/v2.2.1/LICENSE) and [EULA](https://github.com/SnowLuma/SnowLuma/blob/v2.2.1/EULA.md) first. This repository does not supply its programs; the built-in extension fetches the official package from the official release. Neither implies upstream endorsement or additional permission.
+SnowLuma v2.3.x replaced the native hook and makes Linux QQ 3.2.34-53644 exit after injection, so this project stays on v2.2.1. Use `tools/snowluma-switch-2.2.1.sh` to switch versions while preserving configuration.
 
 ## Building from source
 
-Use JDK 17, Android SDK 35, the Android NDK and Python 3.11+. Compile the application sources with:
+Requirements: JDK 17, Android SDK 35, NDK 27.0.12077973 and Python 3.11+.
 
-```powershell
-./gradlew.bat :core:compileKotlin :app:compileBootstrapReleaseKotlin
+```bash
+./gradlew :core:compileKotlin :app:compileBootstrapReleaseKotlin
 ```
 
-A full APK additionally requires a prepared runtime image, native resources and license inputs. Large assets and machine settings are excluded from Git. Once these inputs and the long-term signing configuration are ready, double-click `build.bat` on Windows, or run `python3 -B tools/build_release.py` on other systems. The script displays Chinese progress messages, builds and verifies a signed release, and exports it to `dist/` by default. See the [build guide (Chinese)](构建指南.md).
+A complete APK also needs the runtime image, native libraries and distribution assets configured in `local.properties`, plus a PKCS12 signing identity in `.local/signing/`:
 
-The keystore and credentials stay in the Git-ignored `.local/signing/` directory and are reused for later releases. See [signing initialization and backup (Chinese)](构建指南.md#一键构建正式包).
+```bash
+./gradlew -PbundledRuntime=true :app:assembleBundledRelease
+```
 
-## Updates
+Verify the result with `apksigner verify --min-sdk-version 21`, `aapt2 dump badging`, and by comparing the SHA-256 of `assets/bootstrap/arm64-v8a/ubuntu.tar.bin` with its manifest.
 
-**Settings → About → Check for updates** manages app APK updates. A dialog shows release notes and offers an in-app download or an external browser. The in-app download verifies the APK and opens the system installer; if installation permission is missing, the app guides you to settings and continues when you return. A message confirms when the latest applicable version is installed. AstrBot and NapCat have separate component update entries. The in-app flow retains signature verification, resumable downloads, snapshots before installation and component rollback. Android asks you to confirm APK installation.
+## Troubleshooting
 
-The app uses this project's signed GitHub update channels by default: **Releases host app APKs and AstrBot packages, the `updates` branch hosts signed update manifests, and NapCat packages are downloaded directly from upstream official Shell releases**. Changes to Linux QQ, Python or underlying dependencies require a matching runtime environment upgrade. See [updates and distribution (Chinese)](更新与分发.md) for configuration details.
+- **Port 6185 already in use**: an AstrBot process survived a system kill. The current build reaps leftovers before start and after stop; also check for a manually started instance.
+- **Services stop after a while (exit code 137)**: Android 12+ limits background child processes (about 32 by default) or memory is low. Raise the child-process limit with Shizuku under **Settings → Permissions**, whitelist the app for battery, and close unused sessions.
+- **QQ exits after SnowLuma starts**: make sure SnowLuma is v2.2.1; v2.3.x is known to crash Linux QQ 3.2.34-53644 on injection.
+- **Forgot the SnowLuma WebUI password**: delete `program/config/webui.json`, start SnowLuma manually with `SNOWLUMA_WEBUI_BOOTSTRAP_PASSWORD`, set a new password, then start it from the app.
 
-## Community
+## Contributors
 
-<p align="center">
-  <a href="https://qm.qq.com/q/fS2CdoBQB2"><img src="./images/qq-community.en.svg" alt="Join the QQ community" width="220" /></a>
-</p>
+- **HZP-BT** — maintainer: SnowLuma integration, home service cards, build and release
+- JunWan666 — upstream author of the base project
 
-Join the QQ community to discuss app usage, AstrBot / NapCat configuration, personas and feature ideas. Group discussions are primarily in Chinese. You can also report issues through [GitHub Issues](https://github.com/JunWan666/astrbot-for-android/issues) for tracking and reference.
+## License and credits
 
-## Documentation
+Original code in this project is licensed under the [MIT License](../LICENSE). The base project is [JunWan666/astrbot-for-android](https://github.com/JunWan666/astrbot-for-android); thanks to the original author and all contributors.
 
-The detailed guides and project policies below are currently available in Chinese.
+This project is not affiliated with Tencent, QQ or SnowLuma. SnowLuma is source-available under a non-commercial license and its native components are bound by its EULA; third-party packaging, automated deployment and commercial use require prior written authorization. QQ and related components remain the property of Tencent. Use this project for personal study and research only, follow the QQ User Agreement and applicable laws, and evaluate account risk before using non-official interoperability tools.
 
-- [User guide](使用指南.md): WebUI configuration, personas, websites, permissions, device access, extensions, resources and backups.
-- [SnowLuma extension guide](SnowLuma扩展.md): Install, start and connect SnowLuma in the app, with license and troubleshooting notes.
-- [SnowLuma manual setup](SnowLuma手动部署.md): Official package setup on a phone, AstrBot connection, troubleshooting, sources and license references.
-- [Build guide](构建指南.md): Development tools, runtime assets and APK builds.
-- [Updates and distribution](更新与分发.md): App signing, update channels and GitHub publishing.
-- [Distribution materials](发行材料.md): Third-party licenses, dependency inventories and accompanying source archives.
-- [Changelog](CHANGELOG.md) · [Contributing](../.github/CONTRIBUTING.md) · [Commit rules](../.github/GIT_COMMIT_RULES.md).
-
-## License and acknowledgements
-
-Original code in this project is licensed under the [MIT License](../LICENSE). **Copyright © 2026 [JunWan666](https://github.com/JunWan666)**. Retain the copyright notice and license text when using or distributing the code.
-
-Thanks to [AstrBot](https://github.com/AstrBotDevs/AstrBot), [NapCatQQ](https://github.com/NapNeko/NapCatQQ), [PRoot](https://github.com/proot-me/proot), Ubuntu, Termux and the related open-source projects. Third-party components remain subject to their respective licenses and distribution terms. See [NOTICE](legal/NOTICE) and [third-party notices](legal/THIRD_PARTY_NOTICES.md).
-
-## Star History
-
-<div align="center">
-  <a href="https://www.star-history.com/?repos=JunWan666%2Fastrbot-for-android&amp;type=date&amp;legend=top-left">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=JunWan666/astrbot-for-android&amp;type=date&amp;theme=dark&amp;legend=top-left" />
-      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=JunWan666/astrbot-for-android&amp;type=date&amp;legend=top-left" />
-      <img src="https://api.star-history.com/chart?repos=JunWan666/astrbot-for-android&amp;type=date&amp;legend=top-left" alt="AstrBot for Android Star History" width="680" />
-    </picture>
-  </a>
-</div>
+Hide account names, QR codes, passwords, tokens and API keys before sharing logs or screenshots.
