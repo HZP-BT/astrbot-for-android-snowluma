@@ -556,6 +556,15 @@ class RuntimeController(private val context: Context, private val scope: Corouti
                     install()
                     checkLocalized(RuntimeStore.state.value.componentsReady) { AppText.get(R.string.ui_this_apk_contains_only_the_base_runtime_complete_resources) }
                     configuration.prepareDefaults()
+                    // Restart-all also restarts a desktop that was running before the restart.
+                    val desktopWasRunning = action == "restart" && id == null && DesktopStore.state.value.running
+                    val qqWasRunning = desktopWasRunning && DesktopStore.state.value.qqRunning
+                    if (action == "restart" && id == null) {
+                        desktopRepository.setQqDesired(false)
+                        desktop.stopQq()
+                        desktopRepository.setDesired(false)
+                        desktop.stop()
+                    }
                     // NapCat is no longer a home service: start-all runs AstrBot and the SnowLuma bridge.
                     val preferSnowLuma = id == null && SnowLumaStore.state.value.installed && SnowLumaStore.state.value.licenseAccepted
                     val ids = id?.let { listOf(it) } ?: listOf(ServiceId.ASTRBOT)
@@ -573,9 +582,26 @@ class RuntimeController(private val context: Context, private val scope: Corouti
                         if (activeConnections[serviceId]?.let { it.enabled && it.endpoint != null } == true) waitForInterface(serviceId)
                     }
                     if (preferSnowLuma) startSnowLuma()
+                    if (desktopWasRunning) {
+                        runCatching {
+                            desktopRepository.setDesired(true)
+                            desktop.start()
+                        }.onFailure { event(AppText.get(R.string.desktop_operation_failed)) }
+                    }
+                    if (qqWasRunning) {
+                        runCatching {
+                            desktopRepository.setQqDesired(true)
+                            desktop.startQq()
+                        }.onFailure { event(AppText.get(R.string.desktop_operation_failed)) }
+                    }
                 }
                 "stop" -> {
-                    if (id == null) { snowLumaRepository.setDesired(false); snowluma.stop() }
+                    if (id == null) {
+                        snowLumaRepository.setDesired(false); snowluma.stop()
+                        // Stop-all also closes the desktop and the original QQ it owns.
+                        desktopRepository.setDesired(false); desktopRepository.setQqDesired(false)
+                        desktop.stop()
+                    }
                     (id?.let { listOf(it) } ?: ServiceId.entries.reversed()).forEach { serviceId ->
                         checkLocalized(preferences.edit().putBoolean("desired_${serviceId.name}", false).commit()) { AppText.get(R.string.ui_unable_to_save_stop_preferences_check_storage_space) }
                         supervisors.getValue(serviceId).stop()

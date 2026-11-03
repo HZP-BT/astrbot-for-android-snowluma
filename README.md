@@ -10,7 +10,7 @@
     <img src="https://img.shields.io/badge/Ubuntu-PRoot-E95420?style=for-the-badge&amp;logo=ubuntu&amp;logoColor=white" alt="PRoot Ubuntu" />
   </p>
   <p>
-    <a href="https://github.com/HZP-BT/astrbot-for-android-snowluma/releases/latest"><img src="https://img.shields.io/badge/Version-1.3.0s6-3867FF?style=flat-square" alt="Version 1.3.0s6" /></a>
+    <a href="https://github.com/HZP-BT/astrbot-for-android-snowluma/releases/latest"><img src="https://img.shields.io/badge/Version-1.3.0s7-3867FF?style=flat-square" alt="Version 1.3.0s6" /></a>
     <img src="https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=flat-square&amp;logo=android&amp;logoColor=white" alt="Android 8.0 and above" />
     <img src="https://img.shields.io/badge/Architecture-ARM64-64748B?style=flat-square" alt="ARM64" />
     <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-18A978?style=flat-square" alt="MIT License" /></a>
@@ -36,7 +36,7 @@
 
 应用内置 PRoot Ubuntu 24.04 运行环境，AstrBot 与 SnowLuma 都以本地服务运行：AstrBot 提供模型、平台、插件与人设管理；SnowLuma 把已登录的 Linux QQ 会话转换为 OneBot v11 接口，通过反向 WebSocket 连接 AstrBot。QQ 登录在应用内置的 Ubuntu 桌面中扫码完成，全程不需要在电脑上配置。
 
-当前发布版本 **1.3.0-snowluma-6**，固定使用 **SnowLuma v2.2.1**（本项目实测可用的版本），并针对 Android/PRoot 环境做了启动注入与进程管理适配。
+当前发布版本 **1.3.0-snowluma-7**，固定使用 **SnowLuma v2.2.1**（本项目实测可用的版本），并针对 Android/PRoot 环境做了启动注入与进程管理适配。
 
 ## 功能特性
 
