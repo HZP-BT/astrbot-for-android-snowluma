@@ -17,14 +17,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.astrbot.android.core.*
 import io.astrbot.android.runtime.*
 import kotlin.math.floor
@@ -237,9 +233,6 @@ internal data class ManagerMenuItem(val title: String, val icon: Int, val subtit
             Row(Modifier.fillMaxWidth().clickable(onClick = onDetails).semantics { contentDescription = AppText.get(R.string.ui_service_details, id.label) },
                 verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 ManagerServiceLogo(id)
-                if (id == ServiceId.ASTRBOT) Text("Star 修改版", fontFamily = FontFamily.Cursive,
-                    fontStyle = FontStyle.Italic, fontSize = 10.sp, color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.rotate(-8f), maxLines = 1)
                 Column(Modifier.weight(1f)) {
                     Text(id.label + (version?.takeIf { it.length <= 24 && it.firstOrNull()?.isDigit() == true }?.let { "  $it" } ?: ""),
                         style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)

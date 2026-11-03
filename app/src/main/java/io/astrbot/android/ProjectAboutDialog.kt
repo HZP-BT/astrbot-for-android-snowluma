@@ -8,8 +8,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import io.astrbot.android.runtime.ManagerState
 import io.astrbot.android.runtime.InstalledVersionInspection
@@ -22,8 +20,6 @@ import io.astrbot.android.runtime.InstalledVersionInspection
                 Column {
                     Text(ProjectIdentity.NAME, style = MaterialTheme.typography.titleMedium)
                     Text(AppText.get(R.string.ui_version_18ab8, BuildConfig.VERSION_NAME))
-                    Text("Star 修改版 · HZP-BT", fontFamily = FontFamily.Cursive, fontStyle = FontStyle.Italic,
-                        color = MaterialTheme.colorScheme.primary)
                 }
             }
             Text(AppText.get(R.string.ui_developed_and_maintained_by, ProjectIdentity.AUTHOR))
