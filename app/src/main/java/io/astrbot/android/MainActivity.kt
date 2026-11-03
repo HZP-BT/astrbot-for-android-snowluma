@@ -361,6 +361,9 @@ class MainActivity : LocalizedActivity() {
         if (showVersions) ProjectAboutDialog(state, onDismiss = { showVersions = false }, onAuthor = {
             runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(ProjectIdentity.AUTHOR_URL))) }
                 .onFailure { Toast.makeText(this@MainActivity, AppText.get(R.string.ui_no_browser_found_visit, ProjectIdentity.AUTHOR_URL), Toast.LENGTH_LONG).show() }
+        }, onRepository = {
+            runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(ProjectIdentity.REPOSITORY))) }
+                .onFailure { Toast.makeText(this@MainActivity, AppText.get(R.string.ui_no_browser_found_visit, ProjectIdentity.REPOSITORY), Toast.LENGTH_LONG).show() }
         })
         backgroundGuide?.let { BackgroundGuideDialog(it) { backgroundGuide = null } }
         if (showEnvironmentCheck) EnvironmentCheckDialog(state,

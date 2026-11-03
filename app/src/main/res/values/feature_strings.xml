@@ -71,4 +71,15 @@
     <string name="snowluma_workspace">程序位于 /manager/extensions/snowluma/program；账号数据位于 /persistent/snowluma/home。普通机器人备份不包含此扩展的数据。</string>
     <string name="snowluma_step">第 %1$d 步 · 已用 %2$s</string>
     <string name="ui_all_services_running">全部服务运行中</string>
+    <string name="snowluma_password_title">SnowLuma 后台密码</string>
+    <string name="snowluma_password_hint">显示的是最近一次通过 App 设置或重置的密码。若你在 SnowLuma 后台自行修改过，请用「重置密码」重新设置。</string>
+    <string name="snowluma_password_change">修改密码</string>
+    <string name="snowluma_password_reset">重置密码</string>
+    <string name="snowluma_password_new">新密码</string>
+    <string name="snowluma_password_weak">密码至少 10 位，需包含大写、小写和特殊符号，且不能有空格。</string>
+    <string name="snowluma_password_saving">正在保存 SnowLuma 密码</string>
+    <string name="snowluma_password_saved">SnowLuma 密码已更新，可在凭据中查看。</string>
+    <string name="snowluma_password_failed">保存 SnowLuma 密码失败，请查看扩展日志。</string>
+    <string name="snowluma_password_reset_notice">将生成新的随机密码并重启 SnowLuma，已登录的 WebUI 会话需要重新登录。</string>
+    <string name="ui_project_github">项目 GitHub 主页</string>
 </resources>

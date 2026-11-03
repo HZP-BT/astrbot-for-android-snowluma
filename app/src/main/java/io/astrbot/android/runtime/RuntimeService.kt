@@ -95,8 +95,10 @@ class RuntimeService : Service() {
             controller.execute(action, id, intent?.getStringExtra("backupId"), intent?.getStringExtra("sourceUri"), intent?.getStringExtra("updateId"),
                 intent?.getIntExtra("backupLimitCount", 0) ?: 0, intent?.getIntExtra("backupLimitMiB", 0) ?: 0,
                 intent?.getIntExtra("sshPort", 8022) ?: 8022, intent?.getBooleanExtra("sshLan", false) ?: false, intent?.getStringExtra("sshPassword"),
-                intent?.takeIf { it.hasExtra("terminalSessionId") }?.getLongExtra("terminalSessionId", -1))
+                intent?.takeIf { it.hasExtra("terminalSessionId") }?.getLongExtra("terminalSessionId", -1),
+                intent?.getStringExtra("snowlumaPassword"))
             intent?.removeExtra("sshPassword")
+            intent?.removeExtra("snowlumaPassword")
             RuntimeStore.state.update { it.copy(completedOperation = requestId) }
             if (idle() && RuntimeStore.state.value.pendingRequests.size <= 1) stopSelf(startId)
         }
@@ -104,6 +106,7 @@ class RuntimeService : Service() {
         operation.invokeOnCompletion {
             operations.remove(operation)
             intent?.removeExtra("sshPassword")
+            intent?.removeExtra("snowlumaPassword")
             RuntimeStore.endRequest(requestId)
         }
         operation.start()
@@ -164,12 +167,13 @@ class RuntimeService : Service() {
         private const val NOTIFICATION_ID = 2001
         fun command(context: Context, operation: String, id: ServiceId? = null, backupId: String? = null, sourceUri: String? = null, updateId: String? = null,
                     backupLimitCount: Int = 0, backupLimitMiB: Int = 0, sshPort: Int = 8022, sshLan: Boolean = false, sshPassword: String? = null,
-                    terminalSessionId: Long? = null): String {
+                    terminalSessionId: Long? = null, snowlumaPassword: String? = null): String {
             val requestId = RuntimeStore.beginRequest()
             try { context.startForegroundService(Intent(context, RuntimeService::class.java)
                 .putExtra("operation", operation).putExtra("serviceId", id?.name).putExtra("backupId", backupId).putExtra("sourceUri", sourceUri).putExtra("updateId", updateId).putExtra("requestId", requestId)
                 .putExtra("backupLimitCount", backupLimitCount).putExtra("backupLimitMiB", backupLimitMiB)
                 .putExtra("sshPort", sshPort).putExtra("sshLan", sshLan).putExtra("sshPassword", sshPassword)
+                .putExtra("snowlumaPassword", snowlumaPassword)
                 .apply { if (terminalSessionId != null) putExtra("terminalSessionId", terminalSessionId) }) }
             catch (failure: Exception) { RuntimeStore.endRequest(requestId); throw failure }
             return requestId

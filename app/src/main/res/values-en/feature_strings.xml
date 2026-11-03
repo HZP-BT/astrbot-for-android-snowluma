@@ -71,4 +71,15 @@
     <string name="snowluma_workspace">Program: /manager/extensions/snowluma/program. Account data: /persistent/snowluma/home. Regular bot backups do not include this extension.</string>
     <string name="snowluma_step">Step %1$d · %2$s elapsed</string>
     <string name="ui_all_services_running">All services are running</string>
+    <string name="snowluma_password_title">SnowLuma WebUI password</string>
+    <string name="snowluma_password_hint">Shows the password last set or reset from this app. If you changed it in the SnowLuma WebUI, use Reset password to set it again.</string>
+    <string name="snowluma_password_change">Change password</string>
+    <string name="snowluma_password_reset">Reset password</string>
+    <string name="snowluma_password_new">New password</string>
+    <string name="snowluma_password_weak">Use at least 10 characters with uppercase, lowercase and a special character, and no spaces.</string>
+    <string name="snowluma_password_saving">Saving the SnowLuma password</string>
+    <string name="snowluma_password_saved">SnowLuma password updated; view it under credentials.</string>
+    <string name="snowluma_password_failed">Could not save the SnowLuma password. Check the extension logs.</string>
+    <string name="snowluma_password_reset_notice">A new random password will be generated and SnowLuma restarted. Signed-in WebUI sessions must sign in again.</string>
+    <string name="ui_project_github">Project on GitHub</string>
 </resources>

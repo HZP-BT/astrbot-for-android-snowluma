@@ -8,11 +8,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import io.astrbot.android.runtime.ManagerState
 import io.astrbot.android.runtime.InstalledVersionInspection
 
-@Composable internal fun ProjectAboutDialog(state: ManagerState, onDismiss: () -> Unit, onAuthor: () -> Unit) {
+@Composable internal fun ProjectAboutDialog(state: ManagerState, onDismiss: () -> Unit, onAuthor: () -> Unit, onRepository: () -> Unit) {
     AlertDialog(onDismissRequest = onDismiss, title = { Text(AppText.get(R.string.ui_app_and_component_versions)) }, text = {
         Column(Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -20,12 +22,15 @@ import io.astrbot.android.runtime.InstalledVersionInspection
                 Column {
                     Text(ProjectIdentity.NAME, style = MaterialTheme.typography.titleMedium)
                     Text(AppText.get(R.string.ui_version_18ab8, BuildConfig.VERSION_NAME))
+                    Text("Star 修改版 · HZP-BT", fontFamily = FontFamily.Cursive, fontStyle = FontStyle.Italic,
+                        color = MaterialTheme.colorScheme.primary)
                 }
             }
             Text(AppText.get(R.string.ui_developed_and_maintained_by, ProjectIdentity.AUTHOR))
             Text(AppText.get(R.string.ui_project_license, ProjectIdentity.LICENSE))
             Text(ProjectIdentity.COPYRIGHT, style = MaterialTheme.typography.bodySmall)
             TextButton(onClick = onAuthor) { Text(AppText.get(R.string.ui_author_s_github_profile)) }
+            TextButton(onClick = onRepository) { Text(AppText.get(R.string.ui_project_github)) }
             HorizontalDivider()
             state.versions.filterKeys { it != "App" }.forEach { (component, version) ->
                 Text("${componentLabel(component)}: $version", style = MaterialTheme.typography.bodySmall)

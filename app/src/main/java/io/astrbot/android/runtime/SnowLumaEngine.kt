@@ -1,6 +1,8 @@
 package io.astrbot.android.runtime
 
 import android.content.Context
+import android.system.Os
+import android.util.AtomicFile
 import io.astrbot.android.AppText
 import io.astrbot.android.R
 import io.astrbot.android.checkLocalized
@@ -13,6 +15,7 @@ import org.json.JSONObject
 import java.io.File
 import java.net.InetAddress
 import java.net.ServerSocket
+import java.security.SecureRandom
 import java.util.concurrent.TimeUnit
 
 data class SnowLumaState(
@@ -54,9 +57,49 @@ class SnowLumaRepository(private val context: Context) {
 
     fun prepareAssets() {
         val scripts = File(directory, "scripts").apply { mkdirs() }
-        for (name in listOf("install.py", "start.sh", "sources.json")) {
+        for (name in listOf("install.py", "start.sh", "sources.json", "password.py")) {
             context.assets.open("runtime/snowluma/$name").use { input -> File(scripts, name).outputStream().use { input.copyTo(it) } }
         }
+    }
+
+    private val passwordFile get() = File(context.filesDir, "persistent/manager/snowluma-initial-password")
+
+    fun credential(): String? = runCatching {
+        passwordFile.takeIf { it.isFile && it.length() <= 4096 }
+            ?.readText(Charsets.UTF_8)?.trim()?.takeIf { it.isNotEmpty() }
+    }.getOrNull()
+
+    fun generatePassword(): String = "Star!" + ByteArray(12).also { SecureRandom().nextBytes(it) }
+        .joinToString("") { "%02x".format(it) }
+
+    fun isStrongPassword(value: String): Boolean = value.length >= 10 && value.none { it.isWhitespace() } &&
+        value.any { it.isLowerCase() } && value.any { it.isUpperCase() } && value.any { !it.isLetterOrDigit() }
+
+    /** Writes SnowLuma's scrypt state directly; call only while the runtime is stopped. */
+    suspend fun setPassword(value: String) = withContext(Dispatchers.IO) {
+        checkLocalized(SnowLumaStore.state.value.installed) { AppText.get(R.string.snowluma_install_first) }
+        checkLocalized(isStrongPassword(value)) { AppText.get(R.string.snowluma_password_weak) }
+        prepareAssets()
+        val result = BootstrapRuntime(context).execute("/usr/bin/python3",
+            "/manager/extensions/snowluma/scripts/password.py", value, timeoutSeconds = 60)
+        RuntimeStore.log(context, LogCategory.SNOWLUMA).append(result.output.trim().take(2000))
+        checkLocalized(result.exitCode == 0) { AppText.get(R.string.snowluma_password_failed) }
+        rememberCredential(value)
+    }
+
+    fun rememberCredential(value: String) {
+        passwordFile.parentFile?.mkdirs()
+        val atomic = AtomicFile(passwordFile)
+        val output = atomic.startWrite()
+        try {
+            output.write(value.toByteArray(Charsets.UTF_8))
+            atomic.finishWrite(output)
+        } catch (failure: Throwable) {
+            atomic.failWrite(output)
+            throw failure
+        }
+        Os.chmod(passwordFile.path, 384)
+        DurableFiles.sync(passwordFile.parentFile!!)
     }
 
     suspend fun install(progress: (String) -> Unit) = withContext(Dispatchers.IO) {
@@ -124,6 +167,7 @@ class SnowLumaRepository(private val context: Context) {
                 DurableFiles.delete(File(directory, name))
             }
         }
+        passwordFile.delete()
         refresh()
     }
 }
@@ -163,7 +207,12 @@ class SnowLumaEngine(private val context: Context, private val scope: CoroutineS
         process = owned
         SnowLumaStore.state.update { it.copy(active = true, ready = false, error = null) }
         output = scope.launch(Dispatchers.IO) { runCatching { owned.inputStream.bufferedReader().useLines { lines ->
-            lines.forEach { line -> RuntimeStore.log(context, LogCategory.SNOWLUMA).append(line) }
+            lines.forEach { line ->
+                // Capture the generated bootstrap password before the log redacts it.
+                Regex("initial credentials: user=admin password=([0-9a-fA-F]{16})").find(line)
+                    ?.groupValues?.get(1)?.let { repository.rememberCredential(it) }
+                RuntimeStore.log(context, LogCategory.SNOWLUMA).append(line)
+            }
         } } }
         monitor = scope.launch(Dispatchers.IO) {
             while (isActive && process === owned && owned.isAlive) {

@@ -3,10 +3,10 @@
 package io.astrbot.android
 
 internal object ProjectIdentity {
-    const val NAME = "AstrBot for Android"
-    const val AUTHOR = "JunWan666"
-    const val AUTHOR_URL = "https://github.com/JunWan666"
-    const val REPOSITORY = "https://github.com/JunWan666/astrbot-for-android"
-    const val COPYRIGHT = "Copyright © 2026 JunWan666"
+    const val NAME = "AstrBot for Android · SnowLuma 版"
+    const val AUTHOR = "HZP-BT"
+    const val AUTHOR_URL = "https://github.com/HZP-BT"
+    const val REPOSITORY = "https://github.com/HZP-BT/astrbot-for-android-snowluma"
+    const val COPYRIGHT = "Copyright © 2026 HZP-BT · 基础版本 © JunWan666"
     const val LICENSE = "MIT"
 }

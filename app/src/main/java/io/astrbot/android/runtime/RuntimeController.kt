@@ -331,7 +331,7 @@ class RuntimeController(private val context: Context, private val scope: Corouti
     suspend fun execute(action: String, id: ServiceId?, backupId: String? = null, sourceUri: String? = null, updateId: String? = null,
                         backupLimitCount: Int = 0, backupLimitMiB: Int = 0,
                         sshPort: Int = 8022, sshLan: Boolean = false, sshPassword: String? = null,
-                        terminalSessionId: Long? = null) = commands.withLock {
+                        terminalSessionId: Long? = null, snowlumaPassword: String? = null) = commands.withLock {
         val diagnosticSnapshot = RuntimeStore.state.value
         var resumeSsh = false
         var resumeBots = emptyList<ServiceId>()
@@ -458,6 +458,9 @@ class RuntimeController(private val context: Context, private val scope: Corouti
                     desktopRepository.setQqDesired(false)
                     snowLumaRepository.uninstall()
                 }
+                "snowluma-reset-password" -> changeSnowLumaPassword(null)
+                "snowluma-set-password" -> changeSnowLumaPassword(
+                    requireNotNullLocalized(snowlumaPassword) { AppText.get(R.string.snowluma_password_weak) })
                 "cpolar-install" -> {
                     cpolarRepository.install { phase -> updateState { it.copy(phase = phase) } }
                     cpolar.start()
@@ -1141,6 +1144,24 @@ class RuntimeController(private val context: Context, private val scope: Corouti
         snowLumaRepository.setDesired(true)
         snowLumaRepository.setPreferred(true)
         snowLumaRepository.refresh()
+    }
+
+    private suspend fun changeSnowLumaPassword(requested: String?) {
+        checkLocalized(SnowLumaStore.state.value.installed) { AppText.get(R.string.snowluma_install_first) }
+        val wasActive = SnowLumaStore.state.value.active
+        updateState { it.copy(phase = AppText.get(R.string.snowluma_password_saving)) }
+        snowluma.stop()
+        try {
+            snowLumaRepository.setPassword(requested?.takeIf { it.isNotBlank() } ?: snowLumaRepository.generatePassword())
+            updateState { it.copy(notice = AppText.get(R.string.snowluma_password_saved)) }
+        } finally {
+            if (wasActive && DesktopStore.state.value.qqRunning) {
+                runCatching { snowluma.start() }.onFailure {
+                    SnowLumaStore.state.update { state -> state.copy(error = AppText.get(R.string.snowluma_failed)) }
+                }
+            }
+            snowLumaRepository.refresh()
+        }
     }
 
     private fun launchCommand(id: ServiceId, nonce: String? = null) = when (id) {

@@ -1,9 +1,15 @@
 package io.astrbot.android
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.os.PersistableBundle
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -12,6 +18,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -37,7 +45,24 @@ class SnowLumaActivity : LocalizedActivity() {
         var checked by remember { mutableStateOf(false) }
         var uninstall by remember { mutableStateOf(false) }
         var logs by remember { mutableStateOf<String?>(null) }
-        fun command(action: String) { RuntimeService.command(this@SnowLumaActivity, "snowluma-$action") }
+        var credential by remember { mutableStateOf(repository.credential()) }
+        var reveal by remember { mutableStateOf(false) }
+        var changePassword by remember { mutableStateOf(false) }
+        var resetPassword by remember { mutableStateOf(false) }
+        var newPassword by remember { mutableStateOf("") }
+        LaunchedEffect(state.busy) { if (!state.busy) credential = repository.credential() }
+        fun command(action: String, password: String? = null) {
+            RuntimeService.command(this@SnowLumaActivity, "snowluma-$action", snowlumaPassword = password)
+        }
+        fun copyPassword() {
+            val value = credential ?: return
+            val clip = ClipData.newPlainText(AppText.get(R.string.snowluma_password_title), value)
+            clip.description.extras = PersistableBundle().apply {
+                putBoolean("android.content.extra.IS_SENSITIVE", true)
+            }
+            getSystemService(ClipboardManager::class.java).setPrimaryClip(clip)
+            Toast.makeText(this@SnowLumaActivity, AppText.get(R.string.ui_copied, AppText.get(R.string.snowluma_password_title)), Toast.LENGTH_SHORT).show()
+        }
         fun openDesktop() { startActivity(Intent(this@SnowLumaActivity, DesktopActivity::class.java)) }
         val dependencies = desktop.configuration.installed && desktop.configuration.qqInstalled
         Scaffold(topBar = {
@@ -104,11 +129,35 @@ class SnowLumaActivity : LocalizedActivity() {
                         Text(AppText.get(R.string.snowluma_webui_hint), style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
+                    if (state.installed) ManagerSection(AppText.get(R.string.snowluma_password_title)) {
+                        Text(AppText.get(R.string.snowluma_password_hint), style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Row(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceContainer, MaterialTheme.shapes.small)
+                            .padding(start = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text(if (credential == null) "—" else if (reveal) credential!! else "••••••••",
+                                Modifier.weight(1f), fontFamily = FontFamily.Monospace, style = MaterialTheme.typography.bodyMedium)
+                            IconButton(onClick = { reveal = !reveal }, enabled = credential != null) {
+                                Icon(painterResource(if (reveal) R.drawable.ic_visibility_off else R.drawable.ic_visibility),
+                                    contentDescription = "${if (reveal) AppText.get(R.string.ui_hide) else AppText.get(R.string.ui_show)} ${AppText.get(R.string.snowluma_password_title)}")
+                            }
+                        }
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            ManagerActionButton(AppText.get(R.string.ui_copy_f4880, AppText.get(R.string.snowluma_password_title)),
+                                { copyPassword() }, Modifier.weight(1f), ActionTone.NEUTRAL, credential != null && !state.busy)
+                            ManagerActionButton(AppText.get(R.string.snowluma_password_change),
+                                { newPassword = ""; changePassword = true }, Modifier.weight(1f), ActionTone.NEUTRAL, !state.busy)
+                        }
+                        ManagerActionButton(AppText.get(R.string.snowluma_password_reset),
+                            { resetPassword = true }, Modifier.fillMaxWidth(), ActionTone.NEUTRAL, !state.busy)
+                    }
                     ManagerSection(AppText.get(R.string.snowluma_connection_title)) {
                         Text(AppText.get(R.string.snowluma_connection_hint), style = MaterialTheme.typography.bodySmall)
                     }
                 }
                 Text(AppText.get(R.string.snowluma_workspace), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                ManagerActionButton(AppText.get(R.string.ui_project_github), {
+                    runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(ProjectIdentity.REPOSITORY))) }
+                }, Modifier.fillMaxWidth(), ActionTone.NEUTRAL)
                 ManagerActionButton(AppText.get(R.string.ui_logs_894b8), {
                     lifecycleScope.launch { logs = withContext(Dispatchers.IO) { RuntimeStore.log(this@SnowLumaActivity, LogCategory.SNOWLUMA).tail(100) } }
                 }, Modifier.fillMaxWidth(), ActionTone.NEUTRAL)
@@ -118,6 +167,25 @@ class SnowLumaActivity : LocalizedActivity() {
             text = { Text(AppText.get(R.string.snowluma_uninstall_notice)) },
             confirmButton = { TextButton(onClick = { uninstall = false; command("uninstall") }) { Text(AppText.get(R.string.ui_ok)) } },
             dismissButton = { TextButton(onClick = { uninstall = false }) { Text(AppText.get(R.string.ui_cancel)) } })
+        if (changePassword) AlertDialog(onDismissRequest = { changePassword = false },
+            title = { Text(AppText.get(R.string.snowluma_password_change)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(value = newPassword, onValueChange = { newPassword = it },
+                        label = { Text(AppText.get(R.string.snowluma_password_new)) }, singleLine = true,
+                        visualTransformation = PasswordVisualTransformation())
+                    Text(AppText.get(R.string.snowluma_password_weak), style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            },
+            confirmButton = { TextButton(onClick = { changePassword = false; command("set-password", newPassword) },
+                enabled = repository.isStrongPassword(newPassword) && !state.busy) { Text(AppText.get(R.string.ui_ok)) } },
+            dismissButton = { TextButton(onClick = { changePassword = false }) { Text(AppText.get(R.string.ui_cancel)) } })
+        if (resetPassword) AlertDialog(onDismissRequest = { resetPassword = false },
+            title = { Text(AppText.get(R.string.snowluma_password_reset)) },
+            text = { Text(AppText.get(R.string.snowluma_password_reset_notice)) },
+            confirmButton = { TextButton(onClick = { resetPassword = false; command("reset-password") }) { Text(AppText.get(R.string.ui_ok)) } },
+            dismissButton = { TextButton(onClick = { resetPassword = false }) { Text(AppText.get(R.string.ui_cancel)) } })
         logs?.let { text -> AlertDialog(onDismissRequest = { logs = null }, title = { Text(AppText.get(R.string.ui_logs_894b8)) },
             text = { Text(text, Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState()), style = MaterialTheme.typography.bodySmall) },
             confirmButton = { TextButton(onClick = { logs = null }) { Text(AppText.get(R.string.ui_ok)) } }) }
